@@ -138,27 +138,38 @@ html,body,div,section{scrollbar-width:none!important;-ms-overflow-style:none!imp
 .inner.active .t-bot{opacity:1;transform:none;transition:opacity .5s ease-out 1.35s,transform .5s ease-out 1.35s}
 
 /* ==================================================================
-   SLIDE 9: 结尾
+   SLIDE 9: 结尾 —— 全部居中，稳重淡入
    ================================================================== */
 
-.ending .t-center{left:30%;top:26%;font-family:"Long Cang","Ma Shan Zheng","ZCOOL XiaoWei","STKaiti",serif;
-  font-size:76px;font-weight:400;letter-spacing:12px;line-height:1.15;
+/* 标题"生生不息"：居中，竖排气息 -> 横排大气 */
+.ending .t-center{left:50%;top:30%;transform:translateX(-50%);
+  font-family:"Noto Serif SC","Ma Shan Zheng","STSong","Songti SC",serif;
+  font-size:72px;font-weight:700;letter-spacing:10px;line-height:1.15;white-space:nowrap;
   color:#fff;text-shadow:0 0 24px rgba(232,200,122,.75),0 0 48px rgba(232,200,122,.35),0 2px 4px rgba(0,0,0,.5)}
-.ending .t-center .ch{display:inline-block;opacity:0;transform:translateY(24px);transition:opacity .6s ease,transform .7s cubic-bezier(.34,1.56,.64,1)}
+.ending .t-center .ch{display:inline-block;opacity:0;transform:translateY(30px);transition:opacity .5s ease,transform .6s cubic-bezier(.22,1.1,.36,1)}
 .ending.active .t-center .ch{opacity:1;transform:none}
-.ending.active .t-center .ch:nth-child(1){transition-delay:.3s}
-.ending.active .t-center .ch:nth-child(2){transition-delay:.44s}
-.ending.active .t-center .ch:nth-child(3){transition-delay:.58s}
-.ending.active .t-center .ch:nth-child(4){transition-delay:.72s}
+.ending.active .t-center .ch:nth-child(1){transition-delay:.2s}
+.ending.active .t-center .ch:nth-child(2){transition-delay:.35s}
+.ending.active .t-center .ch:nth-child(3){transition-delay:.5s}
+.ending.active .t-center .ch:nth-child(4){transition-delay:.65s}
 
-.ending .t-en{left:30%;top:40%;font-size:10px;font-weight:500;letter-spacing:4px;color:rgba(255,255,255,.85);text-transform:uppercase;transform:translateY(8px)}
-.ending.active .t-en{opacity:1;transform:none;transition:opacity .5s ease-out .88s,transform .5s ease-out .88s}
+/* 英文 FOREVER ALIVE */
+.ending .t-en{left:50%;top:48%;transform:translateX(-50%);
+  font-size:11px;font-weight:500;letter-spacing:6px;color:rgba(255,255,255,.8);text-transform:uppercase;
+  opacity:0;transition:opacity .6s ease-out 1s,transform .6s ease-out 1s}
+.ending.active .t-en{opacity:1;transform:translateX(-50%)}
 
-.ending .t-line{left:30%;top:45%;width:0;height:2px;border-radius:1px;background:linear-gradient(90deg,#e8c87a,#f6e3a7);box-shadow:0 0 10px rgba(232,200,122,.6)}
-.ending.active .t-line{width:38%;transition:width .9s cubic-bezier(.16,1,.3,1) .92s}
+/* 金色分割线：从中心向外展开 */
+.ending .t-line{left:50%;top:53%;width:0;height:2px;border-radius:1px;transform:translateX(-50%);
+  background:linear-gradient(90deg,#e8c87a,#f6e3a7);box-shadow:0 0 10px rgba(232,200,122,.6);
+  opacity:0;transition:opacity .4s ease-out .95s,width .9s cubic-bezier(.16,1,.3,1) 1s}
+.ending.active .t-line{opacity:1;width:60%}
 
-.ending .t-slogan{left:30%;top:52%;font-size:13px;color:rgba(255,255,255,.85);letter-spacing:3px;transform:translateY(8px)}
-.ending.active .t-slogan{opacity:1;transform:none;transition:opacity .6s ease-out 1.1s,transform .6s ease-out 1.1s}
+/* 标语"文化不止于被看见" */
+.ending .t-slogan{left:50%;top:60%;transform:translateX(-50%);
+  font-size:14px;color:rgba(255,255,255,.85);letter-spacing:4px;font-weight:400;
+  opacity:0;transition:opacity .7s ease-out 1.3s,transform .7s ease-out 1.3s}
+.ending.active .t-slogan{opacity:1;transform:translateX(-50%)}
 
 /* ========== 移动端响应式 ========== */
 @media (max-width:375px){
