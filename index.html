@@ -34,32 +34,24 @@
     transform:scale(1);transition:transform 2.5s cubic-bezier(.16,1,.3,1)}
   .slide.active img{transform:scale(1.04)}
 
-  /* ========== 压暗遮罩层（把原图文字压黑，opacity 0.92+ 让原字完全消失） ========== */
+  /* ========== 纯色遮罩层（opacity 1.0 完全盖死原图文字） ========== */
   .dim{position:absolute;z-index:2;pointer-events:none}
-  /* 封面：整个左半侧从顶到底几乎全黑 */
-  .dim-cover{left:0;top:0;width:48%;height:100%;
-    background:linear-gradient(90deg,rgba(0,0,0,.95) 0%,rgba(0,0,0,.72) 60%,rgba(0,0,0,0) 100%)}
-  /* 内页左标题区 */
-  .dim-title{left:0;top:0;width:36%;height:70%;
-    background:linear-gradient(90deg,rgba(0,0,0,.93) 0%,rgba(0,0,0,.65) 70%,rgba(0,0,0,0) 100%)}
-  /* 内页左标题区（红色背景版） */
-  .dim-title-red{left:0;top:0;width:36%;height:70%;
-    background:linear-gradient(90deg,rgba(60,8,5,.95) 0%,rgba(60,8,5,.70) 70%,rgba(60,8,5,0) 100%)}
-  /* 内页右描述区 */
-  .dim-desc{left:44%;top:18%;width:56%;height:52%;
-    background:linear-gradient(270deg,rgba(0,0,0,.92) 0%,rgba(0,0,0,.60) 60%,rgba(0,0,0,0) 100%)}
-  /* 顶部条 */
-  .dim-top{left:0;top:0;width:100%;height:14%;
-    background:linear-gradient(180deg,rgba(0,0,0,.85) 0%,rgba(0,0,0,0) 100%)}
-  /* 底部条 */
-  .dim-bot{left:0;top:80%;width:100%;height:20%;
-    background:linear-gradient(0deg,rgba(0,0,0,.92) 0%,rgba(0,0,0,0) 100%)}
-  /* 结尾中央 */
-  .dim-center{left:26%;top:20%;width:48%;height:44%;
-    background:radial-gradient(ellipse at center,rgba(0,0,0,.95) 0%,rgba(0,0,0,.70) 60%,rgba(0,0,0,0) 100%)}
-  /* 结尾底部 */
-  .dim-bot-cover{left:0;top:70%;width:100%;height:30%;
-    background:linear-gradient(0deg,rgba(0,0,0,.93) 0%,rgba(0,0,0,0) 100%)}
+  /* 封面：整个左半侧纯色黑 */
+  .dim-cover{left:0;top:0;width:48%;height:100%;background:#0a0a0a}
+  /* 内页左标题区纯色黑 */
+  .dim-title{left:0;top:0;width:36%;height:70%;background:#0a0a0a}
+  /* 内页左标题区（红色背景版）深红 */
+  .dim-title-red{left:0;top:0;width:36%;height:70%;background:#2a0805}
+  /* 内页右描述区纯色黑 */
+  .dim-desc{left:44%;top:18%;width:56%;height:52%;background:#0a0a0a}
+  /* 顶部条纯色黑 */
+  .dim-top{left:0;top:0;width:100%;height:14%;background:#0a0a0a}
+  /* 底部条纯色黑 */
+  .dim-bot{left:0;top:80%;width:100%;height:20%;background:#0a0a0a}
+  /* 结尾中央纯色黑 */
+  .dim-center{left:26%;top:20%;width:48%;height:44%;background:#0a0a0a}
+  /* 结尾底部纯色黑 */
+  .dim-bot-cover{left:0;top:70%;width:100%;height:30%;background:#0a0a0a}
 
   /* ========== 动画文字层 ========== */
   .texter{position:absolute;z-index:10;pointer-events:none}
