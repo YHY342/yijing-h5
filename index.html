@@ -7,648 +7,117 @@
 <meta name="description" content="彝境 · 千年彝族文化遗产 H5 展示">
 <title>彝境 · YI CULTURAL HERITAGE</title>
 <style>
-  :root{
-    --gold:#e8c87a;
-    --gold-soft:rgba(232,200,122,.6);
-    --gold-faint:rgba(232,200,122,.15);
-    --ink:#0a0a0a;
-    --text-bright:rgba(255,255,255,.95);
-    --text-body:rgba(255,255,255,.72);
-    --text-dim:rgba(255,255,255,.45);
-    --ease-out-expo:cubic-bezier(.16,1,.3,1);
-    --ease-spring:cubic-bezier(.34,1.56,.64,1);
-  }
-
   *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-  /* 全局强制隐藏所有滚动条（双重保险） */
-  html,body,div,section{scrollbar-width:none!important;-ms-overflow-style:none!important}
-  ::-webkit-scrollbar{display:none!important;width:0!important;height:0!important;background:transparent!important}
-  html,body{
-    width:100%;height:100%;overflow:hidden;
-    background:var(--ink);color:#fff;
-    font-family:"PingFang SC","Microsoft YaHei","Noto Sans SC","Helvetica Neue",sans-serif;
-    -webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;
-  }
-
-  /* ========== 顶部进度条 ========== */
-  .top-progress{
-    position:fixed;top:0;left:0;height:2px;width:0%;
-    background:linear-gradient(90deg,var(--gold),#f6e3a7,var(--gold));
-    box-shadow:0 0 12px rgba(232,200,122,.5);
-    z-index:100;transition:width .5s var(--ease-out-expo);
-  }
-  /* 进度条末端发光点 */
-  .top-progress::after{
-    content:"";position:absolute;right:-6px;top:-2px;width:6px;height:6px;border-radius:50%;
-    background:var(--gold);box-shadow:0 0 10px rgba(232,200,122,.9),0 0 20px rgba(232,200,122,.5);
-    opacity:0;transition:opacity .3s;
-  }
-  body.loaded .top-progress::after{opacity:1}
+  html,body{width:100%;height:100%;overflow:hidden;background:#0a0a0a;color:#fff}
+  /* 全局隐藏所有滚动条 */
+  html,body,div,section,::-webkit-scrollbar{scrollbar-width:none!important;-ms-overflow-style:none!important;display:none!important;width:0!important;height:0!important}
 
   /* ========== 滑动容器 ========== */
   .slider{
-    height:100vh;overflow-y:auto;overflow-x:hidden;max-width:100vw;
+    height:100vh;overflow-y:auto;overflow-x:hidden;
     scroll-snap-type:y mandatory;
     scroll-behavior:auto;
     -webkit-overflow-scrolling:touch;
-    scrollbar-width:none;
-    opacity:0;transition:opacity .8s var(--ease-out-expo);
+    opacity:0;transition:opacity .5s ease;
   }
   body.loaded .slider{opacity:1}
-  .slider::-webkit-scrollbar{display:none!important;width:0!important;height:0!important;background:transparent!important}
-  .slider{-ms-overflow-style:none!important;scrollbar-width:none!important;scrollbar-gutter:stable}
 
-  /* ========== 每一页 ========== */
+  /* ========== 每一页：图片全屏铺满 ========== */
   .slide{
-    position:relative;height:100vh;scroll-snap-align:start;
+    position:relative;
+    height:100vh;
+    scroll-snap-align:start;
     overflow:hidden;
   }
-
-  /* 背景层：独立切图，cover 铺满，手机原生缩放 */
-  .bg-wrap{
-    position:absolute;inset:-5%;overflow:hidden;pointer-events:none;
-  }
-  .bg{
-    position:absolute;inset:0;
-    background-size:cover;background-position:center;
-    transform:scale(1);
-    transition:transform 1.8s var(--ease-out-expo);
-  }
-  .slide.active .bg{ transform:scale(1.04); }
-
-  /* 三层渐变遮罩 + 暗角 vignette：视觉聚焦到中下方 */
-  .slide::before{
-    content:"";position:absolute;inset:0;z-index:1;pointer-events:none;
-    background:
-      radial-gradient(ellipse 80% 55% at 50% 35%, rgba(0,0,0,0) 0%, rgba(0,0,0,.45) 70%, rgba(0,0,0,.7) 100%),
-      linear-gradient(180deg, rgba(0,0,0,.5) 0%, rgba(0,0,0,.12) 30%, rgba(0,0,0,.45) 70%, rgba(0,0,0,.85) 100%);
-  }
-  .slide::after{
-    content:"";position:absolute;inset:0;z-index:1;pointer-events:none;
-    background:
-      radial-gradient(120% 80% at 80% 10%, rgba(232,200,122,.08) 0%, transparent 55%),
-      radial-gradient(80% 60% at 15% 90%, rgba(160,30,30,.07) 0%, transparent 60%);
-    mix-blend-mode:screen;
-  }
-
-  /* ========== 内容层 ========== */
-  .content{
-    position:relative;z-index:3;
+  .slide img{
+    position:absolute;
+    top:0;left:0;
+    width:100%;
     height:100%;
-    padding:7vh 7vw calc(6vh + env(safe-area-inset-bottom));
-    display:flex;flex-direction:column;justify-content:space-between;
+    object-fit:cover;
+    pointer-events:none;
+    -webkit-user-drag:none;
+    user-select:none;
   }
-
-  /* 顶栏 */
-  .top-bar{
-    display:flex;justify-content:space-between;align-items:center;
-  }
-  .page-num-block{
-    display:flex;align-items:baseline;gap:6px;
-    font-family:"SF Mono","Menlo","Consolas",monospace;
-    letter-spacing:.05em;
-  }
-  .page-num-block .cur{
-    font-size:22px;font-weight:700;color:var(--gold);
-    text-shadow:0 0 20px rgba(232,200,122,.3);
-  }
-  .page-num-block .sep{color:rgba(255,255,255,.3);font-weight:300}
-  .page-num-block .tot{color:var(--text-dim);font-size:13px;font-weight:400}
-
-  .brand-mark{
-    display:flex;align-items:center;gap:8px;
-    font-size:10px;letter-spacing:.5em;color:var(--text-dim);
-    text-transform:uppercase;font-weight:500;
-  }
-  .brand-mark::before{
-    content:"";width:18px;height:1px;background:var(--gold-soft);
-  }
-
-  /* 主体文字区 */
-  .hero{flex:1;display:flex;flex-direction:column;justify-content:center;padding-top:4vh}
-
-  /* Tag 标签 */
-  .tag{
-    display:inline-flex;align-items:center;gap:10px;
-    font-size:10.5px;letter-spacing:.45em;
-    color:var(--gold);
-    font-weight:500;
-    opacity:0;transform:translateY(12px);
-  }
-  .tag::before{
-    content:"";width:28px;height:1px;background:var(--gold);
-    box-shadow:0 0 8px rgba(232,200,122,.5);
-  }
-
-  /* 中文标题 - 逐字动画 */
-  .cn-title{
-    font-size:clamp(44px, 12.5vw, 96px);
-    font-weight:900;
-    letter-spacing:.06em;
-    line-height:1.02;
-    margin-top:26px;
-    text-shadow:0 6px 40px rgba(0,0,0,.55), 0 0 80px rgba(0,0,0,.3);
-  }
-  .cn-title .line{display:block;overflow:hidden}
-  .cn-title .chars{display:inline-block}
-  .cn-title .chars .char{
-    display:inline-block;
-    opacity:0;transform:translateY(110%) rotateX(-30deg);
-    transform-origin:center bottom;
-    animation:charIn .55s var(--ease-spring) forwards;
-    animation-delay:var(--d,.05s);
-  }
-  @keyframes charIn{
-    0%  {opacity:0;transform:translateY(110%) rotateX(-30deg)}
-    60% {opacity:1;transform:translateY(-12%) rotateX(4deg)}
-    100%{opacity:1;transform:translateY(0) rotateX(0)}
-  }
-
-  /* 封面页标题 - 金色渐变 + 流光扫过 */
-  .slide.cover .cn-title{
-    font-size:clamp(64px, 18vw, 140px);
-    letter-spacing:.22em;text-align:center;
-    background:linear-gradient(180deg,#fff 0%,#f4df99 40%,#d8a54a 70%,#b2802f 100%);
-    background-size:100% 200%;
-    background-position:0 0;
-    -webkit-background-clip:text;background-clip:text;
-    -webkit-text-fill-color:transparent;
-    filter:drop-shadow(0 4px 40px rgba(232,200,122,.35));
-    animation:goldShine 4s ease-in-out infinite;
-  }
-  @keyframes goldShine{
-    0%,100%{background-position:0 0}
-    50%    {background-position:0 100%}
-  }
-
-  /* 分割装饰 */
-  .divider{
-    width:42px;height:2px;background:var(--gold);
-    margin:22px 0 20px;
-    opacity:0;transform:scaleX(0);
-    transform-origin:left center;
-  }
-  .slide.active .divider{
-    animation:dividerIn .6s .8s var(--ease-out-expo) forwards;
-  }
-  @keyframes dividerIn{to{opacity:1;transform:scaleX(1)}}
-
-  /* 英文副标题 */
-  .en-title{
-    font-size:clamp(12px, 3vw, 15px);
-    letter-spacing:.42em;
-    font-weight:300;
-    text-transform:uppercase;
-    color:var(--text-body);
-    opacity:0;transform:translateY(16px);
-  }
-  .slide.active .en-title{
-    animation:fadeUp .7s .9s var(--ease-out-expo) forwards;
-  }
-
-  /* 描述文字 - 逐行淡入 */
-  .desc{
-    margin-top:28px;
-    font-size:clamp(13.5px, 3.6vw, 15.5px);
-    line-height:1.9;
-    color:var(--text-body);
-    max-width:500px;
-    opacity:0;transform:translateY(20px);
-  }
-  .desc .desc-line{
-    display:block;opacity:0;transform:translateY(10px);
-    animation:descLine .65s var(--ease-out-expo) forwards;
-    animation-delay:var(--dd,1.05s);
-  }
-  @keyframes descLine{to{opacity:1;transform:translateY(0)}}
-
-  /* ========== 底部栏 ========== */
-  .bottom-bar{
-    display:flex;justify-content:space-between;align-items:flex-end;
-    padding-bottom:2vh;
-  }
-
-  .bottom-meta{
-    display:flex;flex-direction:column;gap:4px;
-    font-size:9px;letter-spacing:.5em;color:var(--text-dim);
-    text-transform:uppercase;
-  }
-  .bottom-meta .chapter{color:var(--gold-soft)}
-
-  .scroll-hint{
-    display:flex;flex-direction:column;align-items:center;gap:10px;
-    font-size:10.5px;letter-spacing:.3em;color:var(--text-dim);
-    text-transform:uppercase;
-  }
-  .scroll-hint.hide{opacity:0}
-  .hint-arrow{
-    position:relative;width:20px;height:34px;
-  }
-  .hint-arrow::before{
-    content:"";position:absolute;top:0;left:50%;transform:translateX(-50%);
-    width:1px;height:24px;
-    background:linear-gradient(180deg, rgba(232,200,122,.9), rgba(232,200,122,0));
-  }
-  .hint-arrow::after{
-    content:"";position:absolute;bottom:2px;left:50%;transform:translateX(-50%) rotate(45deg);
-    width:6px;height:6px;
-    border-right:1.5px solid var(--gold);border-bottom:1.5px solid var(--gold);
-    animation:hintBounce 2s ease-in-out infinite;
-  }
-  @keyframes hintBounce{
-    0%,100%{transform:translateX(-50%) rotate(45deg) translateY(0);opacity:1}
-    50%    {transform:translateX(-50%) rotate(45deg) translateY(6px);opacity:.4}
-  }
-
-  /* ========== 右侧高级指示器（已移除） ========== */
-  .side-nav{display:none!important}
-
-  /* ========== 通用入场动画 ========== */
-  .slide.active .tag,
-  .slide.active .page-num-block,
-  .slide.active .brand-mark{
-    animation:fadeUp .7s .05s var(--ease-out-expo) forwards;
-  }
-  @keyframes fadeUp{
-    from{opacity:0;transform:translateY(24px)}
-    to  {opacity:1;transform:translateY(0)}
-  }
-
-  /* ========== 封面页居中 ========== */
-  .slide.cover .top-bar{justify-content:center}
-  .slide.cover .brand-mark{display:none}
-  .slide.cover .page-num-block .tot{opacity:0}
-  .slide.cover .hero{align-items:center;text-align:center;padding-top:6vh}
-  .slide.cover .tag{justify-content:center;margin-bottom:12px}
-  .slide.cover .divider{align-self:center;margin:28px auto}
-  .slide.cover .en-title{text-align:center;color:var(--gold);font-size:clamp(14px,3.5vw,18px)}
-  .slide.cover .desc{margin:32px auto 0;text-align:center}
-  .slide.cover .bottom-bar{justify-content:center}
-  .slide.cover .bottom-meta{display:none}
-
-  /* ========== 末页（复用背景图自带文字） ========== */
-  .slide.ending .top-bar{opacity:1}
-  .slide.ending .hero{
-    justify-content:flex-end;align-items:center;text-align:center;
-    padding-bottom:8vh;
-  }
-  .slide.ending .desc{
-    opacity:0;transform:translateY(14px);
-    animation:fadeUp .9s .4s var(--ease-out-expo) forwards;
-    text-align:center;margin:0 auto;font-size:clamp(12px,3.2vw,14px);
-  }
-  .slide.ending .scroll-hint .hint-arrow::after{transform:translateX(-50%) rotate(-135deg);border-top:1.5px solid var(--gold);border-bottom:none;border-left:1.5px solid var(--gold);border-right:none}
-
-  /* ========== 小屏适配 ========== */
-  @media (max-height: 640px){
-    .content{padding:5vh 7vw 4vh}
-    .hero{padding-top:2vh}
-    .tag{margin-bottom:10px}
-    .cn-title{margin-top:18px}
-    .divider{margin:16px 0 14px}
-    .desc{margin-top:20px}
-  }
-
-  /* ========== 打印/无JS 降级 ========== */
-  body.no-js .slider{opacity:1}
-  body.no-js .slide{page-break-after:always}
 </style>
 </head>
 <body class="no-js">
 
-<!-- 顶部进度条 -->
-<div class="top-progress" id="topProgress"></div>
-
 <div class="slider" id="slider">
 
   <!-- 1 彝境 · 封面 -->
-  <section class="slide cover" data-index="0">
-    <div class="bg-wrap"><div class="bg" style="background-image:url('https://cdn.jsdelivr.net/gh/YHY342/yijing-h5@gh-pages/images/01-yijing.png')"></div></div>
-    <div class="content">
-      <div class="top-bar">
-        <div class="page-num-block"><span class="cur">01</span><span class="sep">/</span><span class="tot">09</span></div>
-        <span class="brand-mark">YI · HERITAGE</span>
-      </div>
-      <div class="hero">
-        <span class="tag">YI · CULTURE · HERITAGE</span>
-        <h1 class="cn-title" data-chars="彝境"></h1>
-        <span class="divider"></span>
-        <div class="en-title">YI CULTURAL HERITAGE</div>
-        <p class="desc"><span class="desc-line" data-lines="让千年的火，继续燃烧。"></span><span class="desc-line" data-lines="在群山之间，在指尖之上，在血脉深处。"></span></p>
-      </div>
-      <div class="bottom-bar">
-        <div class="bottom-meta"><span class="chapter">彝境 · 序章</span></div>
-        <span class="scroll-hint">
-          <span class="hint-arrow"></span><span>下滑</span>
-        </span>
-      </div>
-    </div>
+  <section class="slide" data-index="0">
+    <img src="https://cdn.jsdelivr.net/gh/YHY342/yijing-h5@gh-pages/images/01-yijing.png" alt="彝境">
   </section>
 
   <!-- 2 远古回响 -->
   <section class="slide" data-index="1">
-    <div class="bg-wrap"><div class="bg" style="background-image:url('https://cdn.jsdelivr.net/gh/YHY342/yijing-h5@gh-pages/images/02-huixiang.png')"></div></div>
-    <div class="content">
-      <div class="top-bar">
-        <div class="page-num-block"><span class="cur">02</span><span class="sep">/</span><span class="tot">09</span></div>
-        <span class="brand-mark">CHAPTER · 02</span>
-      </div>
-      <div class="hero">
-        <span class="tag">THE ECHO OF ANCIENT</span>
-        <h2 class="cn-title" data-chars="远古 回响"></h2>
-        <span class="divider"></span>
-        <div class="en-title">A thousand-year-old legend, awakening in the mountains</div>
-        <p class="desc"><span class="desc-line" data-lines="远古的呼唤，穿越时空。"></span><span class="desc-line" data-lines="一个古老族群的信仰与迁徙，在岁月中刻下独特的文化印记。"></span></p>
-      </div>
-      <div class="bottom-bar">
-        <div class="bottom-meta"><span class="chapter">彝境 · 溯源</span><span>02 / 09</span></div>
-        <span class="scroll-hint"><span class="hint-arrow"></span><span>下滑</span></span>
-      </div>
-    </div>
+    <img src="https://cdn.jsdelivr.net/gh/YHY342/yijing-h5@gh-pages/images/02-huixiang.png" alt="远古回响">
   </section>
 
   <!-- 3 火之图腾 -->
   <section class="slide" data-index="2">
-    <div class="bg-wrap"><div class="bg" style="background-image:url('https://cdn.jsdelivr.net/gh/YHY342/yijing-h5@gh-pages/images/03-huotuteng.png')"></div></div>
-    <div class="content">
-      <div class="top-bar">
-        <div class="page-num-block"><span class="cur">03</span><span class="sep">/</span><span class="tot">09</span></div>
-        <span class="brand-mark">CHAPTER · 03</span>
-      </div>
-      <div class="hero">
-        <span class="tag">THE FIRE TOTEM</span>
-        <h2 class="cn-title" data-chars="火之 图腾"></h2>
-        <span class="divider"></span>
-        <div class="en-title">FIRE, the eternal source of warmth and sacrifice</div>
-        <p class="desc"><span class="desc-line" data-lines="火，是彝人最虔诚的图腾。"></span><span class="desc-line" data-lines="火把节时，万人高举火把，照亮山野，延续着对自然的敬畏与赞颂。"></span></p>
-      </div>
-      <div class="bottom-bar">
-        <div class="bottom-meta"><span class="chapter">彝境 · 信仰</span><span>03 / 09</span></div>
-        <span class="scroll-hint"><span class="hint-arrow"></span><span>下滑</span></span>
-      </div>
-    </div>
+    <img src="https://cdn.jsdelivr.net/gh/YHY342/yijing-h5@gh-pages/images/03-huotuteng.png" alt="火之图腾">
   </section>
 
   <!-- 4 指尖生花 -->
   <section class="slide" data-index="3">
-    <div class="bg-wrap"><div class="bg" style="background-image:url('https://cdn.jsdelivr.net/gh/YHY342/yijing-h5@gh-pages/images/04-zhijian.png')"></div></div>
-    <div class="content">
-      <div class="top-bar">
-        <div class="page-num-block"><span class="cur">04</span><span class="sep">/</span><span class="tot">09</span></div>
-        <span class="brand-mark">CHAPTER · 04</span>
-      </div>
-      <div class="hero">
-        <span class="tag">BLOOMING UNDER FINGERTIPS</span>
-        <h2 class="cn-title" data-chars="指尖 生花"></h2>
-        <span class="divider"></span>
-        <div class="en-title">One stitch at a time, stitching memory into thread</div>
-        <p class="desc"><span class="desc-line" data-lines="一针一线，绣出古老记忆；一线一纹，延续千年文明。"></span><span class="desc-line" data-lines="彝族刺绣，在指尖盛开。"></span></p>
-      </div>
-      <div class="bottom-bar">
-        <div class="bottom-meta"><span class="chapter">彝境 · 刺绣</span><span>04 / 09</span></div>
-        <span class="scroll-hint"><span class="hint-arrow"></span><span>下滑</span></span>
-      </div>
-    </div>
+    <img src="https://cdn.jsdelivr.net/gh/YHY342/yijing-h5@gh-pages/images/04-zhijian.png" alt="指尖生花">
   </section>
 
   <!-- 5 黑与红 -->
   <section class="slide" data-index="4">
-    <div class="bg-wrap"><div class="bg" style="background-image:url('https://cdn.jsdelivr.net/gh/YHY342/yijing-h5@gh-pages/images/05-heiuhong.png')"></div></div>
-    <div class="content">
-      <div class="top-bar">
-        <div class="page-num-block"><span class="cur">05</span><span class="sep">/</span><span class="tot">09</span></div>
-        <span class="brand-mark">CHAPTER · 05</span>
-      </div>
-      <div class="hero">
-        <span class="tag">THE COLORS</span>
-        <h2 class="cn-title" data-chars="黑 与红"></h2>
-        <span class="divider"></span>
-        <div class="en-title">Black as the earth, red as the bloodline</div>
-        <p class="desc"><span class="desc-line" data-lines="黑是土地，红是血脉。"></span><span class="desc-line" data-lines="彝族传统色彩美学，不仅是衣着装扮，更是对天地祖先的庄严叙述。"></span></p>
-      </div>
-      <div class="bottom-bar">
-        <div class="bottom-meta"><span class="chapter">彝境 · 色彩</span><span>05 / 09</span></div>
-        <span class="scroll-hint"><span class="hint-arrow"></span><span>下滑</span></span>
-      </div>
-    </div>
+    <img src="https://cdn.jsdelivr.net/gh/YHY342/yijing-h5@gh-pages/images/05-heiuhong.png" alt="黑与红">
   </section>
 
   <!-- 6 漆韵千年 -->
   <section class="slide" data-index="5">
-    <div class="bg-wrap"><div class="bg" style="background-image:url('https://cdn.jsdelivr.net/gh/YHY342/yijing-h5@gh-pages/images/06-qiyun.png')"></div></div>
-    <div class="content">
-      <div class="top-bar">
-        <div class="page-num-block"><span class="cur">06</span><span class="sep">/</span><span class="tot">09</span></div>
-        <span class="brand-mark">CHAPTER · 06</span>
-      </div>
-      <div class="hero">
-        <span class="tag">THE RHYTHM OF LACQUER</span>
-        <h2 class="cn-title" data-chars="漆韵 千年"></h2>
-        <span class="divider"></span>
-        <div class="en-title">Every vessel, a vessel of time</div>
-        <p class="desc"><span class="desc-line" data-lines="一件件漆器，承载民族记忆；一层层漆面，记录时代变迁。"></span><span class="desc-line" data-lines="彝族漆器，器物之美，亦为自然之道。"></span></p>
-      </div>
-      <div class="bottom-bar">
-        <div class="bottom-meta"><span class="chapter">彝境 · 漆器</span><span>06 / 09</span></div>
-        <span class="scroll-hint"><span class="hint-arrow"></span><span>下滑</span></span>
-      </div>
-    </div>
+    <img src="https://cdn.jsdelivr.net/gh/YHY342/yijing-h5@gh-pages/images/06-qiyun.png" alt="漆韵千年">
   </section>
 
   <!-- 7 银饰之美 -->
   <section class="slide" data-index="6">
-    <div class="bg-wrap"><div class="bg" style="background-image:url('https://cdn.jsdelivr.net/gh/YHY342/yijing-h5@gh-pages/images/07-yinshi.png')"></div></div>
-    <div class="content">
-      <div class="top-bar">
-        <div class="page-num-block"><span class="cur">07</span><span class="sep">/</span><span class="tot">09</span></div>
-        <span class="brand-mark">CHAPTER · 07</span>
-      </div>
-      <div class="hero">
-        <span class="tag">THE BEAUTY OF SILVER</span>
-        <h2 class="cn-title" data-chars="银饰 之美"></h2>
-        <span class="divider"></span>
-        <div class="en-title">Silver ornaments, not just adornment</div>
-        <p class="desc"><span class="desc-line" data-lines="一件银饰，不仅是美丽的装饰，更是对亲人的祝福与思念。"></span><span class="desc-line" data-lines="是彝家儿女对美的永恒追求。"></span></p>
-      </div>
-      <div class="bottom-bar">
-        <div class="bottom-meta"><span class="chapter">彝境 · 银饰</span><span>07 / 09</span></div>
-        <span class="scroll-hint"><span class="hint-arrow"></span><span>下滑</span></span>
-      </div>
-    </div>
+    <img src="https://cdn.jsdelivr.net/gh/YHY342/yijing-h5@gh-pages/images/07-yinshi.png" alt="银饰之美">
   </section>
 
   <!-- 8 新生传承 -->
   <section class="slide" data-index="7">
-    <div class="bg-wrap"><div class="bg" style="background-image:url('https://cdn.jsdelivr.net/gh/YHY342/yijing-h5@gh-pages/images/08-xinsheng.png')"></div></div>
-    <div class="content">
-      <div class="top-bar">
-        <div class="page-num-block"><span class="cur">08</span><span class="sep">/</span><span class="tot">09</span></div>
-        <span class="brand-mark">CHAPTER · 08</span>
-      </div>
-      <div class="hero">
-        <span class="tag">REBIRTH AND INNOVATION</span>
-        <h2 class="cn-title" data-chars="新生 传承"></h2>
-        <span class="divider"></span>
-        <div class="en-title">Where tradition meets modern life</div>
-        <p class="desc"><span class="desc-line" data-lines="当古老手艺遇见现代设计，传统纹样焕新出场。"></span><span class="desc-line" data-lines="文化在传承中创新，在创新中生生不息。"></span></p>
-      </div>
-      <div class="bottom-bar">
-        <div class="bottom-meta"><span class="chapter">彝境 · 传承</span><span>08 / 09</span></div>
-        <span class="scroll-hint"><span class="hint-arrow"></span><span>下滑</span></span>
-      </div>
-    </div>
+    <img src="https://cdn.jsdelivr.net/gh/YHY342/yijing-h5@gh-pages/images/08-xinsheng.png" alt="新生传承">
   </section>
 
-  <!-- 9 生生不息（复用背景图自带文字） -->
-  <section class="slide ending" data-index="8">
-    <div class="bg-wrap"><div class="bg" style="background-image:url('https://cdn.jsdelivr.net/gh/YHY342/yijing-h5@gh-pages/images/09-shengsheng.png')"></div></div>
-    <div class="content">
-      <div class="top-bar">
-        <div class="page-num-block"><span class="cur">09</span><span class="sep">/</span><span class="tot">09</span></div>
-        <span class="brand-mark">FINALE</span>
-      </div>
-      <div class="hero">
-        <p class="desc" style="color:rgba(232,200,122,.85);text-align:center;font-size:clamp(11px,3vw,13px);letter-spacing:.35em;text-transform:uppercase;">↑ 上滑回到开头</p>
-      </div>
-      <div class="bottom-bar">
-        <div class="bottom-meta"><span class="chapter">彝境 · 终章</span><span>THE END</span></div>
-        <span class="scroll-hint"><span class="hint-arrow"></span><span>上滑</span></span>
-      </div>
-    </div>
+  <!-- 9 生生不息 -->
+  <section class="slide" data-index="8">
+    <img src="https://cdn.jsdelivr.net/gh/YHY342/yijing-h5@gh-pages/images/09-shengsheng.png" alt="生生不息">
   </section>
 
 </div>
 
-
-
 <script>
-document.documentElement.classList.add('js');
+// 立刻标记 loaded（第一优先级：永远不黑屏）
+document.body.classList.add('loaded');
 document.body.classList.remove('no-js');
 
-// ========== 第一优先级：确保永远不会全黑 ==========
-function boot(){
-  try { document.body.classList.add('loaded'); } catch(e) {}
-  try {
-    var slider = document.getElementById('slider');
-    var slides = document.querySelectorAll('.slide');
-    var progressBar = document.getElementById('topProgress');
-    var total = slides.length;
-    var currentIdx = 0;
-
-    // 激活第一页（任何情况下都保证至少一页可见）
-    try {
-      slides[0].classList.add('active');
-      progressBar.style.width = (1/total*100) + '%';
-    } catch(e) {}
-
-    // ========== 标题逐字动画 ==========
-    function buildChars(el){
-      var raw = el.dataset.chars || el.textContent;
-      el.textContent = '';
-      var lines = raw.trim().split(' ');
-      lines.forEach(function(line, li){
-        var lineSpan = document.createElement('span');
-        lineSpan.className = 'line';
-        var charsSpan = document.createElement('span');
-        charsSpan.className = 'chars';
-        for(var ci=0; ci<line.length; ci++){
-          var ch = line[ci];
-          var s = document.createElement('span');
-          s.className = 'char';
-          s.textContent = ch;
-          s.style.setProperty('--d', (ci*0.035 + li*0.08) + 's');
-          charsSpan.appendChild(s);
-        }
-        lineSpan.appendChild(charsSpan);
-        el.appendChild(lineSpan);
-      });
-    }
-
-    // ========== 描述逐行动画 ==========
-    function buildDesc(el){
-      var lines = el.querySelectorAll('.desc-line');
-      for(var i=0; i<lines.length; i++){
-        var ln = lines[i];
-        var text = ln.dataset.lines || ln.textContent;
-        ln.textContent = text;
-        ln.style.setProperty('--dd', (1.05 + i*0.22) + 's');
+// 触摸优化：快速上下滑整屏翻页
+(function(){
+  var slider = document.getElementById('slider');
+  if(!slider) return;
+  var startY = 0;
+  slider.addEventListener('touchstart', function(e){
+    startY = e.touches[0].clientY;
+  }, {passive:true});
+  slider.addEventListener('touchend', function(e){
+    var dy = startY - (e.changedTouches[0].clientY);
+    if(Math.abs(dy) > window.innerHeight*0.3){
+      var currentIdx = Math.round(slider.scrollTop / window.innerHeight);
+      var total = slider.children.length;
+      if(dy > 0 && currentIdx < total-1){
+        slider.scrollTo({ top: (currentIdx+1)*window.innerHeight, behavior:'smooth' });
+      } else if(dy < 0 && currentIdx > 0){
+        slider.scrollTo({ top: (currentIdx-1)*window.innerHeight, behavior:'smooth' });
       }
     }
-
-    // 构建动画元素
-    try {
-      slides.forEach(function(s){
-        s.querySelectorAll('.cn-title').forEach(buildChars);
-        s.querySelectorAll('.desc').forEach(buildDesc);
-      });
-    } catch(e) {}
-
-    // ========== 翻页状态管理 ==========
-    function onSlideChange(idx){
-      try {
-        slides.forEach(function(s){ s.classList.remove('active','prev'); });
-        slides[currentIdx].classList.add('prev');
-        slides[idx].classList.add('active');
-        currentIdx = idx;
-        progressBar.style.width = ((idx+1)/total*100) + '%';
-      } catch(e) {}
-    }
-
-    // IntersectionObserver（老浏览器 fallback 用 scroll）
-    if('IntersectionObserver' in window){
-      try {
-        var io = new IntersectionObserver(function(entries){
-          entries.forEach(function(e){
-            if(e.isIntersecting){
-              var idx = parseInt(e.target.dataset.index,10);
-              if(idx !== currentIdx) onSlideChange(idx);
-            }
-          });
-        },{ root:slider, threshold:0.55 });
-        slides.forEach(function(s){ io.observe(s); });
-      } catch(e) {
-        // fallback: scroll 事件
-        window.addEventListener('scroll', function(){
-          var h = window.innerHeight;
-          var idx = Math.round(slider.scrollTop / h);
-          if(idx !== currentIdx && idx >=0 && idx < total) onSlideChange(idx);
-        }, {passive:true});
-      }
-    } else {
-      window.addEventListener('scroll', function(){
-        var h = window.innerHeight;
-        var idx = Math.round(slider.scrollTop / h);
-        if(idx !== currentIdx && idx >=0 && idx < total) onSlideChange(idx);
-      }, {passive:true});
-    }
-
-    // ========== 触摸优化 ==========
-    var startY = 0;
-    slider.addEventListener('touchstart', function(e){ startY = e.touches[0].clientY; }, {passive:true});
-    slider.addEventListener('touchend', function(e){
-      try {
-        var dy = startY - (e.changedTouches[0].clientY);
-        if(Math.abs(dy) > window.innerHeight*0.25){
-          if(dy > 0 && currentIdx < total-1){
-            slider.scrollTo({ top:(currentIdx+1)*window.innerHeight, behavior:'smooth' });
-          } else if(dy < 0 && currentIdx > 0){
-            slider.scrollTo({ top:(currentIdx-1)*window.innerHeight, behavior:'smooth' });
-          }
-        }
-      } catch(e) {}
-    }, {passive:true});
-
-  } catch(err) {
-    // 任何初始化报错都不影响 visible
-    console.error('Yijing boot error:', err);
-  }
-}
-
-// 立即执行（不等待 load 事件）
-boot();
-// load 事件再保险一次
-window.addEventListener('load', boot);
-document.addEventListener('DOMContentLoaded', boot);
+  }, {passive:true});
+})();
 </script>
 </body>
 </html>
