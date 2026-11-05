@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
@@ -6,221 +6,222 @@
 <meta name="theme-color" content="#0c0c0c">
 <title>彝境 · YI CULTURAL HERITAGE</title>
 <style>
-  /* ===== Reset ===== */
-  *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-  html,body{width:100%;height:100%;overflow:hidden;background:#0a0a0a}
-  html,body,div,section{scrollbar-width:none!important;-ms-overflow-style:none!important}
-  ::-webkit-scrollbar{display:none!important;width:0!important;height:0!important;background:transparent!important}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{width:100%;height:100%;overflow:hidden;background:#0a0a0a}
+html,body,div,section{scrollbar-width:none!important;-ms-overflow-style:none!important}
+::-webkit-scrollbar{display:none!important;width:0!important;height:0!important;background:transparent!important}
 
-  /* ===== 顶部进度条 ===== */
-  .progress{position:fixed;top:0;left:0;height:2px;width:0%;
-    background:linear-gradient(90deg,#e8c87a,#f6e3a7,#e8c87a);
-    box-shadow:0 0 12px rgba(232,200,122,.5);z-index:999;
-    transition:width .5s cubic-bezier(.16,1,.3,1)}
-  .progress::after{content:"";position:absolute;right:-6px;top:-2px;width:6px;height:6px;border-radius:50%;
-    background:#e8c87a;box-shadow:0 0 10px rgba(232,200,122,.9)}
+/* ===== 顶部进度条 ===== */
+.progress{position:fixed;top:0;left:0;height:2px;width:0%;
+  background:linear-gradient(90deg,#e8c87a,#f6e3a7,#e8c87a);
+  box-shadow:0 0 12px rgba(232,200,122,.5);z-index:999;
+  transition:width .5s cubic-bezier(.16,1,.3,1)}
+.progress::after{content:"";position:absolute;right:-6px;top:-2px;width:6px;height:6px;border-radius:50%;
+  background:#e8c87a;box-shadow:0 0 10px rgba(232,200,122,.9)}
 
-  /* ===== 底部页码圆点 ===== */
-  .dots{position:fixed;bottom:calc(env(safe-area-inset-bottom) + 18px);left:50%;transform:translateX(-50%);
-    z-index:999;display:flex;gap:8px;padding:6px 14px;
-    background:rgba(0,0,0,.28);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
-    border-radius:20px;border:1px solid rgba(232,200,122,.18);opacity:0;transition:opacity .5s}
-  .dots.show{opacity:1}
-  .dot{width:4px;height:4px;border-radius:50%;background:rgba(255,255,255,.3);transition:all .4s cubic-bezier(.16,1,.3,1)}
-  .dot.active{width:18px;border-radius:3px;background:linear-gradient(90deg,#e8c87a,#f6e3a7);box-shadow:0 0 8px rgba(232,200,122,.6)}
+/* ===== 底部页码圆点 ===== */
+.dots{position:fixed;bottom:calc(env(safe-area-inset-bottom) + 18px);left:50%;transform:translateX(-50%);
+  z-index:999;display:flex;gap:8px;padding:6px 14px;
+  background:rgba(0,0,0,.28);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+  border-radius:20px;border:1px solid rgba(232,200,122,.18);opacity:0;transition:opacity .5s}
+.dots.show{opacity:1}
+.dot{width:4px;height:4px;border-radius:50%;background:rgba(255,255,255,.3);transition:all .4s cubic-bezier(.16,1,.3,1)}
+.dot.active{width:18px;border-radius:3px;background:linear-gradient(90deg,#e8c87a,#f6e3a7);box-shadow:0 0 8px rgba(232,200,122,.6)}
 
-  /* ===== 滑动容器 ===== */
-  .slider{height:100vh;overflow-y:auto;overflow-x:hidden;scroll-snap-type:y mandatory;
-    scroll-behavior:auto;-webkit-overflow-scrolling:touch}
-  .slide{position:relative;height:100vh;scroll-snap-align:start;overflow:hidden;
-    background-image:var(--img);background-size:cover;background-position:center;
-    animation:kenburns 8s ease-out forwards}
-  @keyframes kenburns{0%{background-size:106% 106%}100%{background-size:100% 100%}}
+/* ===== 滑动容器 ===== */
+.slider{height:100vh;overflow-y:auto;overflow-x:hidden;scroll-snap-type:y mandatory;
+  scroll-behavior:auto;-webkit-overflow-scrolling:touch}
+.slide{position:relative;height:100vh;scroll-snap-align:start;overflow:hidden;
+  background-image:var(--img);background-size:100% 100%;background-position:center}
 
-  /* ===== 动画公共基类 ===== */
-  .anim{position:absolute;z-index:10;pointer-events:none;opacity:0}
+/* ===== 共用：文字层 ===== */
+.anim{position:absolute;z-index:10;pointer-events:none;opacity:0}
 
-  /* ==================================================================
-     SLIDE 1: 封面 —— 4 组文字依次入场
-     （等甲方 AI 修完图后，把 01-yijing.png 替换成无文字版本即可）
-     ================================================================== */
+/* ===== 共用：色块（盖原图字用） ===== */
+.cover-block{position:absolute;z-index:9;pointer-events:none;
+  background:rgba(0,0,0,.72);border-radius:2px;
+  /* 轻微模糊让边缘不生硬 */
+  box-shadow:0 0 6px rgba(0,0,0,.3)}
 
-  /* ① 顶部「非遗文化」：淡入+轻微上移 */
-  .cover .t-top{left:12%;top:8%;font-size:14px;color:rgba(255,255,255,.78);letter-spacing:6px;
-    font-weight:500}
-  .cover.active .t-top{opacity:1;transform:none;transition:opacity .6s ease-out .15s,transform .6s ease-out .15s}
-  .cover .t-top{transform:translateY(10px)}
+/* ==================================================================
+   SLIDE 1: 封面
+   ================================================================== */
 
-  /* ② 主标题「彝境」：毛笔字逐字渐显 */
-  .cover .t-title{left:14%;top:22%;font-family:"Noto Serif SC","STSong","Songti SC","Ma Shan Zheng",serif;
-    font-size:92px;font-weight:900;letter-spacing:18px;line-height:1;
-    color:#fff;text-shadow:0 0 24px rgba(232,200,122,.7),0 0 48px rgba(232,200,122,.3)}
-  .cover .t-title .ch{display:inline-block;opacity:0;transform:translateY(20px) scale(.85);
-    transition:opacity .7s ease,transform .8s cubic-bezier(.22,1.2,.36,1)}
-  .cover.active .t-title .ch{opacity:1;transform:none}
-  .cover.active .t-title .ch:nth-child(1){transition-delay:.55s}
-  .cover.active .t-title .ch:nth-child(2){transition-delay:.72s}
+/* 原图文字位置（从图片分析得到）：
+   顶部 "中国·彝族"      : x=12%, y=8%
+   主标题 "彝境"        : x=10%, y=22%, 占 20%宽 × 12%高
+   英文 YI CULTURAL...  : x=12%, y=38%
+   标语 "让千年的火..."  : x=12%, y=50%
+   底部 "彝族非遗..."    : x=10%, y=84%
+*/
 
-  /* ② 英文「YI CULTURAL HERITAGE」：延后淡入上滑 */
-  .cover .t-en{left:14%;top:38%;font-size:12px;font-weight:500;letter-spacing:5px;color:rgba(255,255,255,.85);
-    text-transform:uppercase;transform:translateY(8px)}
-  .cover.active .t-en{opacity:1;transform:none;transition:opacity .6s ease-out .92s,transform .6s ease-out .92s}
+/* ① 色块：顶部 + 主标题区域 */
+.s1-block1{left:8%;top:6%;width:30%;height:40%;background:rgba(0,0,0,.78)}
+/* ② 色块：中部标语区域 */
+.s1-block2{left:8%;top:48%;width:45%;height:12%;background:rgba(0,0,0,.72)}
+/* ③ 色块：底部 */
+.s1-block3{left:6%;top:82%;width:40%;height:6%;background:rgba(0,0,0,.68)}
 
-  /* ② 金色分割线 */
-  .cover .t-line{left:14%;top:43%;width:0%;height:2px;border-radius:1px;
-    background:linear-gradient(90deg,#e8c87a,#f6e3a7);
-    box-shadow:0 0 12px rgba(232,200,122,.7)}
-  .cover.active .t-line{width:58%;transition:width 1s cubic-bezier(.16,1,.3,1) .95s}
+/* ① 顶部「中国·彝族」 */
+.cover .t-top{left:12%;top:8%;font-size:13px;color:rgba(255,255,255,.78);letter-spacing:6px;font-weight:500}
+.cover .t-top{transform:translateY(10px)}
+.cover.active .t-top{opacity:1;transform:none;transition:opacity .6s ease-out .15s,transform .6s ease-out .15s}
 
-  /* ③ 中部标语「让千年的火，继续燃烧。」：逐字打字机 */
-  .cover .t-slogan{left:14%;top:50%;font-size:16px;color:rgba(255,255,255,.9);letter-spacing:4px;
-    font-weight:500}
-  .cover .t-slogan .ch{display:inline-block;opacity:0;transform:translateY(6px);
-    transition:opacity .35s ease,transform .4s ease}
-  .cover.active .t-slogan .ch{opacity:1;transform:none}
-  .cover.active .t-slogan .ch:nth-child(1){transition-delay:1.2s}
-  .cover.active .t-slogan .ch:nth-child(2){transition-delay:1.28s}
-  .cover.active .t-slogan .ch:nth-child(3){transition-delay:1.36s}
-  .cover.active .t-slogan .ch:nth-child(4){transition-delay:1.44s}
-  .cover.active .t-slogan .ch:nth-child(5){transition-delay:1.52s}
-  .cover.active .t-slogan .ch:nth-child(6){transition-delay:1.60s}
-  .cover.active .t-slogan .ch:nth-child(7){transition-delay:1.68s}
-  .cover.active .t-slogan .ch:nth-child(8){transition-delay:1.76s}
-  .cover.active .t-slogan .ch:nth-child(9){transition-delay:1.84s}
-  .cover.active .t-slogan .ch:nth-child(10){transition-delay:1.92s}
-  .cover.active .t-slogan .ch:nth-child(11){transition-delay:2.00s}
+/* ② 主标题「彝境」：逐字弹入 */
+.cover .t-title{left:12%;top:22%;font-family:"Noto Serif SC","STSong","Songti SC","Ma Shan Zheng",serif;
+  font-size:88px;font-weight:900;letter-spacing:14px;line-height:1;
+  color:#fff;text-shadow:0 0 24px rgba(232,200,122,.7),0 0 48px rgba(232,200,122,.3)}
+.cover .t-title .ch{display:inline-block;opacity:0;transform:translateY(20px) scale(.85);
+  transition:opacity .7s ease,transform .8s cubic-bezier(.22,1.2,.36,1)}
+.cover.active .t-title .ch{opacity:1;transform:none}
+.cover.active .t-title .ch:nth-child(1){transition-delay:.55s}
+.cover.active .t-title .ch:nth-child(2){transition-delay:.72s}
 
-  /* ④ 底部「彝族非遗 文化传承」：淡入上滑 */
-  .cover .t-bot{left:12%;top:84%;font-size:13px;color:rgba(255,255,255,.7);letter-spacing:4px;
-    transform:translateY(12px)}
-  .cover.active .t-bot{opacity:1;transform:none;transition:opacity .7s ease-out 1.7s,transform .7s ease-out 1.7s}
+/* ② 英文 + 金色分割线 */
+.cover .t-en{left:12%;top:38%;font-size:11px;font-weight:500;letter-spacing:5px;color:rgba(255,255,255,.85);
+  text-transform:uppercase;transform:translateY(8px)}
+.cover.active .t-en{opacity:1;transform:none;transition:opacity .6s ease-out .92s,transform .6s ease-out .92s}
 
-  .cover .t-scroll{right:12%;top:84%;font-size:11px;color:rgba(255,255,255,.5);letter-spacing:3px;
-    transform:translateY(12px)}
-  .cover.active .t-scroll{opacity:1;transform:none;transition:opacity .7s ease-out 1.9s,transform .7s ease-out 1.9s}
+.cover .t-line{left:12%;top:43%;width:0;height:2px;border-radius:1px;
+  background:linear-gradient(90deg,#e8c87a,#f6e3a7);box-shadow:0 0 12px rgba(232,200,122,.7)}
+.cover.active .t-line{width:55%;transition:width 1s cubic-bezier(.16,1,.3,1) .95s}
 
-  /* ==================================================================
-     SLIDES 2-8: 内页 —— 主标题 + 描述 依次入场
-     ================================================================== */
+/* ③ 标语「让千年的火，继续燃烧。」逐字 */
+.cover .t-slogan{left:12%;top:50%;font-size:15px;color:rgba(255,255,255,.9);letter-spacing:4px;font-weight:500}
+.cover .t-slogan .ch{display:inline-block;opacity:0;transform:translateY(6px);transition:opacity .35s ease,transform .4s ease}
+.cover.active .t-slogan .ch{opacity:1;transform:none}
+.cover.active .t-slogan .ch:nth-child(1){transition-delay:1.2s}
+.cover.active .t-slogan .ch:nth-child(2){transition-delay:1.28s}
+.cover.active .t-slogan .ch:nth-child(3){transition-delay:1.36s}
+.cover.active .t-slogan .ch:nth-child(4){transition-delay:1.44s}
+.cover.active .t-slogan .ch:nth-child(5){transition-delay:1.52s}
+.cover.active .t-slogan .ch:nth-child(6){transition-delay:1.60s}
+.cover.active .t-slogan .ch:nth-child(7){transition-delay:1.68s}
+.cover.active .t-slogan .ch:nth-child(8){transition-delay:1.76s}
+.cover.active .t-slogan .ch:nth-child(9){transition-delay:1.84s}
+.cover.active .t-slogan .ch:nth-child(10){transition-delay:1.92s}
+.cover.active .t-slogan .ch:nth-child(11){transition-delay:2.00s}
 
-  /* 顶部栏：编号 */
-  .inner .t-top{left:12%;top:6%;font-size:11px;color:rgba(255,255,255,.55);letter-spacing:4px;
-    font-weight:500;transform:translateY(8px)}
-  .inner.active .t-top{opacity:1;transform:none;transition:opacity .5s ease-out .1s,transform .5s ease-out .1s}
+/* ④ 底部 */
+.cover .t-bot{left:10%;top:84%;font-size:12px;color:rgba(255,255,255,.7);letter-spacing:4px;transform:translateY(12px)}
+.cover.active .t-bot{opacity:1;transform:none;transition:opacity .7s ease-out 1.7s,transform .7s ease-out 1.7s}
+.cover .t-scroll{right:12%;top:84%;font-size:10px;color:rgba(255,255,255,.5);letter-spacing:3px;transform:translateY(12px)}
+.cover.active .t-scroll{opacity:1;transform:none;transition:opacity .7s ease-out 1.9s,transform .7s ease-out 1.9s}
 
-  /* 左主标题（红圈区域！） */
-  .inner .t-title{left:10%;top:16%;font-family:"Noto Serif SC","STSong","Songti SC",serif;
-    font-size:44px;font-weight:900;letter-spacing:6px;line-height:1.15;
-    color:#fff;text-shadow:0 0 18px rgba(232,200,122,.6),0 0 36px rgba(232,200,122,.25)}
-  .inner .t-title .ch{display:inline-block;opacity:0;transform:translateX(-20px);
-    transition:opacity .5s ease,transform .65s cubic-bezier(.34,1.56,.64,1)}
-  .inner.active .t-title .ch{opacity:1;transform:none}
-  .inner.active .t-title .ch:nth-child(1){transition-delay:.3s}
-  .inner.active .t-title .ch:nth-child(2){transition-delay:.42s}
-  .inner.active .t-title .ch:nth-child(3){transition-delay:.54s}
-  .inner.active .t-title .ch:nth-child(4){transition-delay:.66s}
+/* ==================================================================
+   SLIDES 2-8: 内页
+   ================================================================== */
 
-  /* 左英文副标题 */
-  .inner .t-en{left:10%;top:27%;font-size:10px;font-weight:500;letter-spacing:3px;color:rgba(255,255,255,.8);
-    text-transform:uppercase;transform:translateY(6px)}
-  .inner.active .t-en{opacity:1;transform:none;transition:opacity .5s ease-out .82s,transform .5s ease-out .82s}
+/* 内页色块 */
+.inner-block1{left:6%;top:4%;width:24%;height:30%;background:rgba(0,0,0,.75)}  /* 左上标题区 */
+.inner-block2{left:55%;top:20%;width:42%;height:48%;background:rgba(0,0,0,.68)} /* 右侧描述区 */
+.inner-block3{left:6%;top:88%;width:24%;height:5%;background:rgba(0,0,0,.65)}  /* 底部编号 */
 
-  /* 金色分割线 */
-  .inner .t-line{left:10%;top:31%;width:0%;height:2px;border-radius:1px;
-    background:linear-gradient(90deg,#e8c87a,#f6e3a7);
-    box-shadow:0 0 10px rgba(232,200,122,.6)}
-  .inner.active .t-line{width:55%;transition:width .8s cubic-bezier(.16,1,.3,1) .85s}
+/* 顶部编号 */
+.inner .t-top{left:10%;top:6%;font-size:11px;color:rgba(255,255,255,.55);letter-spacing:4px;font-weight:500;transform:translateY(8px)}
+.inner.active .t-top{opacity:1;transform:none;transition:opacity .5s ease-out .1s,transform .5s ease-out .1s}
 
-  /* 右描述文字（红圈区域！） */
-  .inner .t-desc{right:10%;top:24%;font-size:13px;line-height:1.9;color:rgba(255,255,255,.88);max-width:42%;
-    text-align:left}
-  .inner .t-desc p{opacity:0;transform:translateY(10px);margin-bottom:6px;
-    transition:opacity .5s ease,transform .55s cubic-bezier(.16,1,.3,1)}
-  .inner.active .t-desc p{opacity:1;transform:none}
-  .inner.active .t-desc p:nth-child(1){transition-delay:.95s}
-  .inner.active .t-desc p:nth-child(2){transition-delay:1.10s}
-  .inner.active .t-desc p:nth-child(3){transition-delay:1.25s}
+/* 左主标题 */
+.inner .t-title{left:10%;top:14%;font-family:"Noto Serif SC","STSong","Songti SC",serif;
+  font-size:42px;font-weight:900;letter-spacing:6px;line-height:1.15;
+  color:#fff;text-shadow:0 0 18px rgba(232,200,122,.6),0 0 36px rgba(232,200,122,.25)}
+.inner .t-title .ch{display:inline-block;opacity:0;transform:translateX(-20px);transition:opacity .5s ease,transform .65s cubic-bezier(.34,1.56,.64,1)}
+.inner.active .t-title .ch{opacity:1;transform:none}
+.inner.active .t-title .ch:nth-child(1){transition-delay:.3s}
+.inner.active .t-title .ch:nth-child(2){transition-delay:.42s}
+.inner.active .t-title .ch:nth-child(3){transition-delay:.54s}
+.inner.active .t-title .ch:nth-child(4){transition-delay:.66s}
 
-  /* 底部按钮 */
-  .inner .t-bot{left:10%;top:90%;font-size:11px;color:rgba(255,255,255,.55);letter-spacing:3px;
-    transform:translateY(8px)}
-  .inner.active .t-bot{opacity:1;transform:none;transition:opacity .5s ease-out 1.35s,transform .5s ease-out 1.35s}
+/* 英文副标题 */
+.inner .t-en{left:10%;top:26%;font-size:9px;font-weight:500;letter-spacing:3px;color:rgba(255,255,255,.8);text-transform:uppercase;transform:translateY(6px)}
+.inner.active .t-en{opacity:1;transform:none;transition:opacity .5s ease-out .82s,transform .5s ease-out .82s}
 
-  /* ==================================================================
-     SLIDE 9: 结尾 —— 居中大字 + 底部
-     ================================================================== */
+/* 金色分割线 */
+.inner .t-line{left:10%;top:30%;width:0;height:2px;border-radius:1px;background:linear-gradient(90deg,#e8c87a,#f6e3a7);box-shadow:0 0 10px rgba(232,200,122,.6)}
+.inner.active .t-line{width:50%;transition:width .8s cubic-bezier(.16,1,.3,1) .85s}
 
-  .ending .t-center{left:30%;top:26%;font-family:"Noto Serif SC","STSong","Songti SC",serif;
-    font-size:68px;font-weight:900;letter-spacing:12px;line-height:1.15;
-    color:#fff;text-shadow:0 0 20px rgba(232,200,122,.7),0 0 40px rgba(232,200,122,.3)}
-  .ending .t-center .ch{display:inline-block;opacity:0;transform:translateY(24px);
-    transition:opacity .6s ease,transform .7s cubic-bezier(.34,1.56,.64,1)}
-  .ending.active .t-center .ch{opacity:1;transform:none}
-  .ending.active .t-center .ch:nth-child(1){transition-delay:.3s}
-  .ending.active .t-center .ch:nth-child(2){transition-delay:.44s}
-  .ending.active .t-center .ch:nth-child(3){transition-delay:.58s}
-  .ending.active .t-center .ch:nth-child(4){transition-delay:.72s}
+/* 右描述文字 */
+.inner .t-desc{right:10%;top:28%;font-size:13px;line-height:1.9;color:rgba(255,255,255,.88);max-width:38%;text-align:left}
+.inner .t-desc p{opacity:0;transform:translateY(10px);margin-bottom:6px;transition:opacity .5s ease,transform .55s cubic-bezier(.16,1,.3,1)}
+.inner.active .t-desc p{opacity:1;transform:none}
+.inner.active .t-desc p:nth-child(1){transition-delay:.95s}
+.inner.active .t-desc p:nth-child(2){transition-delay:1.10s}
+.inner.active .t-desc p:nth-child(3){transition-delay:1.25s}
 
-  .ending .t-en{left:30%;top:40%;font-size:11px;font-weight:500;letter-spacing:4px;color:rgba(255,255,255,.85);
-    text-transform:uppercase;transform:translateY(8px)}
-  .ending.active .t-en{opacity:1;transform:none;transition:opacity .5s ease-out .88s,transform .5s ease-out .88s}
+/* 底部编号 */
+.inner .t-bot{left:10%;top:90%;font-size:11px;color:rgba(255,255,255,.55);letter-spacing:3px;transform:translateY(8px)}
+.inner.active .t-bot{opacity:1;transform:none;transition:opacity .5s ease-out 1.35s,transform .5s ease-out 1.35s}
 
-  .ending .t-line{left:30%;top:45%;width:0%;height:2px;border-radius:1px;
-    background:linear-gradient(90deg,#e8c87a,#f6e3a7);
-    box-shadow:0 0 10px rgba(232,200,122,.6)}
-  .ending.active .t-line{width:40%;transition:width .9s cubic-bezier(.16,1,.3,1) .92s}
+/* ==================================================================
+   SLIDE 5 特殊：黑与红 有右侧色卡
+   ================================================================== */
+.s5-block4{right:6%;top:38%;width:28%;height:38%;background:rgba(0,0,0,.62)}  /* 右侧色卡区 */
 
-  .ending .t-slogan{left:30%;top:52%;font-size:14px;color:rgba(255,255,255,.85);letter-spacing:3px;
-    transform:translateY(8px)}
-  .ending.active .t-slogan{opacity:1;transform:none;transition:opacity .6s ease-out 1.1s,transform .6s ease-out 1.1s}
+/* ==================================================================
+   SLIDE 9: 结尾
+   ================================================================== */
+.ending-block1{left:22%;top:22%;width:56%;height:38%;background:rgba(0,0,0,.72)}  /* 中央大字区 */
+.ending-block2{left:22%;top:62%;width:56%;height:10%;background:rgba(0,0,0,.65)}  /* 底部标语 */
 
-  /* 翻页提示 */
-  .swipe-hint{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);
-    width:70px;height:70px;border-radius:50%;
-    border:2px solid rgba(232,200,122,.6);background:rgba(0,0,0,.45);
-    backdrop-filter:blur(8px);z-index:998;pointer-events:none;
-    opacity:0;display:flex;align-items:center;justify-content:center;
-    font-size:24px;color:#e8c87a;transition:opacity .2s}
-  .swipe-hint.show{opacity:1}
+.ending .t-center{left:30%;top:26%;font-family:"Noto Serif SC","STSong","Songti SC",serif;
+  font-size:64px;font-weight:900;letter-spacing:10px;line-height:1.15;
+  color:#fff;text-shadow:0 0 20px rgba(232,200,122,.7),0 0 40px rgba(232,200,122,.3)}
+.ending .t-center .ch{display:inline-block;opacity:0;transform:translateY(24px);transition:opacity .6s ease,transform .7s cubic-bezier(.34,1.56,.64,1)}
+.ending.active .t-center .ch{opacity:1;transform:none}
+.ending.active .t-center .ch:nth-child(1){transition-delay:.3s}
+.ending.active .t-center .ch:nth-child(2){transition-delay:.44s}
+.ending.active .t-center .ch:nth-child(3){transition-delay:.58s}
+.ending.active .t-center .ch:nth-child(4){transition-delay:.72s}
 
-  /* ========== 移动端响应式 ========== */
-  @media (max-width:375px){
-    .cover .t-title{font-size:72px;letter-spacing:14px}
-    .inner .t-title{font-size:36px;letter-spacing:4px}
-    .ending .t-center{font-size:54px;letter-spacing:10px}
-    .inner .t-desc{font-size:12px}
-  }
+.ending .t-en{left:30%;top:40%;font-size:10px;font-weight:500;letter-spacing:4px;color:rgba(255,255,255,.85);text-transform:uppercase;transform:translateY(8px)}
+.ending.active .t-en{opacity:1;transform:none;transition:opacity .5s ease-out .88s,transform .5s ease-out .88s}
+
+.ending .t-line{left:30%;top:45%;width:0;height:2px;border-radius:1px;background:linear-gradient(90deg,#e8c87a,#f6e3a7);box-shadow:0 0 10px rgba(232,200,122,.6)}
+.ending.active .t-line{width:38%;transition:width .9s cubic-bezier(.16,1,.3,1) .92s}
+
+.ending .t-slogan{left:30%;top:52%;font-size:14px;color:rgba(255,255,255,.85);letter-spacing:3px;transform:translateY(8px)}
+.ending.active .t-slogan{opacity:1;transform:none;transition:opacity .6s ease-out 1.1s,transform .6s ease-out 1.1s}
+
+/* ========== 移动端响应式 ========== */
+@media (max-width:375px){
+  .cover .t-title{font-size:72px;letter-spacing:12px}
+  .inner .t-title{font-size:34px;letter-spacing:4px}
+  .ending .t-center{font-size:52px;letter-spacing:8px}
+  .inner .t-desc{font-size:12px}
+  .cover .t-slogan{font-size:13px}
+}
+@media (max-height:650px){
+  .cover .t-title{font-size:70px}
+  .inner .t-title{font-size:32px}
+  .ending .t-center{font-size:50px}
+}
 </style>
 </head>
 <body>
 
 <div class="progress" id="progress"></div>
 <div class="dots" id="dots"></div>
-<div class="swipe-hint" id="swipeHint"></div>
 
 <div class="slider" id="slider">
 
   <!-- ============ Slide 1: 封面 ============ -->
-  <!-- ⚠️ 甲方 AI 修图后，把 01-yijing.png 替换成无文字版本即可 -->
   <section class="slide cover active" data-index="0"
     style="--img:url('images/01-yijing.png')">
+    <!-- 色块（盖原图白色文字用） -->
+    <div class="cover-block s1-block1"></div>
+    <div class="cover-block s1-block2"></div>
+    <div class="cover-block s1-block3"></div>
 
-    <!-- ① 顶部「非遗文化」 -->
+    <!-- 动画文字层 -->
     <div class="anim t-top">中国 · 彝族</div>
-
-    <!-- ② 主标题「彝境」+ 英文 -->
     <div class="anim t-title"><span class="ch">彝</span><span class="ch">境</span></div>
     <div class="anim t-en">YI CULTURAL HERITAGE</div>
     <div class="anim t-line"></div>
-
-    <!-- ③ 中部标语（逐字打字机） -->
     <div class="anim t-slogan">
       <span class="ch">让</span><span class="ch">千</span><span class="ch">年</span><span class="ch">的</span>
       <span class="ch">火</span><span class="ch">，</span><span class="ch">继</span><span class="ch">续</span>
       <span class="ch">燃</span><span class="ch">烧</span><span class="ch">。</span>
     </div>
-
-    <!-- ④ 底部 -->
     <div class="anim t-bot">彝族非遗 · 文化传承</div>
     <div class="anim t-scroll">SCROLL ↓</div>
   </section>
@@ -228,7 +229,10 @@
   <!-- ============ Slide 2: 远古回响 ============ -->
   <section class="slide inner" data-index="1"
     style="--img:url('images/02-huixiang.png')">
-    <!-- 等 AI 修图替换后，删除本 slide 所有文字元素即可 -->
+    <div class="cover-block inner-block1"></div>
+    <div class="cover-block inner-block2"></div>
+    <div class="cover-block inner-block3"></div>
+
     <div class="anim t-top">02 / 09</div>
     <div class="anim t-title"><span class="ch">远</span><span class="ch">古</span><span class="ch">回</span><span class="ch">响</span></div>
     <div class="anim t-en">THE ECHO OF ANCIENT TIMES</div>
@@ -244,6 +248,10 @@
   <!-- ============ Slide 3: 火之图腾 ============ -->
   <section class="slide inner" data-index="2"
     style="--img:url('images/03-huotuteng.png')">
+    <div class="cover-block inner-block1"></div>
+    <div class="cover-block inner-block2"></div>
+    <div class="cover-block inner-block3"></div>
+
     <div class="anim t-top">03 / 09</div>
     <div class="anim t-title"><span class="ch">火</span><span class="ch">之</span><span class="ch">图</span><span class="ch">腾</span></div>
     <div class="anim t-en">THE FIRE TOTEM</div>
@@ -259,6 +267,10 @@
   <!-- ============ Slide 4: 指尖生花 ============ -->
   <section class="slide inner" data-index="3"
     style="--img:url('images/04-zhijian.png')">
+    <div class="cover-block inner-block1"></div>
+    <div class="cover-block inner-block2"></div>
+    <div class="cover-block inner-block3"></div>
+
     <div class="anim t-top">04 / 09</div>
     <div class="anim t-title"><span class="ch">指</span><span class="ch">尖</span><span class="ch">生</span><span class="ch">花</span></div>
     <div class="anim t-en">BLOOMING AT YOUR FINGERTIPS</div>
@@ -274,6 +286,11 @@
   <!-- ============ Slide 5: 黑与红 ============ -->
   <section class="slide inner" data-index="4"
     style="--img:url('images/05-heiuhong.png')">
+    <div class="cover-block inner-block1"></div>
+    <div class="cover-block inner-block2"></div>
+    <div class="cover-block inner-block3"></div>
+    <div class="cover-block s5-block4"></div>
+
     <div class="anim t-top">05 / 09</div>
     <div class="anim t-title"><span class="ch">黑</span><span class="ch">与</span><span class="ch">红</span></div>
     <div class="anim t-en">THE COLORS OF YI</div>
@@ -289,6 +306,10 @@
   <!-- ============ Slide 6: 漆韵千年 ============ -->
   <section class="slide inner" data-index="5"
     style="--img:url('images/06-qiyun.png')">
+    <div class="cover-block inner-block1"></div>
+    <div class="cover-block inner-block2"></div>
+    <div class="cover-block inner-block3"></div>
+
     <div class="anim t-top">06 / 09</div>
     <div class="anim t-title"><span class="ch">漆</span><span class="ch">韵</span><span class="ch">千</span><span class="ch">年</span></div>
     <div class="anim t-en">THE RHYTHM OF LACQUER</div>
@@ -304,6 +325,10 @@
   <!-- ============ Slide 7: 银饰之美 ============ -->
   <section class="slide inner" data-index="6"
     style="--img:url('images/07-yinshi.png')">
+    <div class="cover-block inner-block1"></div>
+    <div class="cover-block inner-block2"></div>
+    <div class="cover-block inner-block3"></div>
+
     <div class="anim t-top">07 / 09</div>
     <div class="anim t-title"><span class="ch">银</span><span class="ch">饰</span><span class="ch">之</span><span class="ch">美</span></div>
     <div class="anim t-en">THE BEAUTY OF SILVER</div>
@@ -319,6 +344,10 @@
   <!-- ============ Slide 8: 新生传承 ============ -->
   <section class="slide inner" data-index="7"
     style="--img:url('images/08-xinsheng.png')">
+    <div class="cover-block inner-block1"></div>
+    <div class="cover-block inner-block2"></div>
+    <div class="cover-block inner-block3"></div>
+
     <div class="anim t-top">08 / 09</div>
     <div class="anim t-title"><span class="ch">新</span><span class="ch">生</span><span class="ch">传</span><span class="ch">承</span></div>
     <div class="anim t-en">INHERITANCE AND INNOVATION</div>
@@ -334,6 +363,9 @@
   <!-- ============ Slide 9: 生生不息 ============ -->
   <section class="slide ending" data-index="8"
     style="--img:url('images/09-shengsheng.png')">
+    <div class="cover-block ending-block1"></div>
+    <div class="cover-block ending-block2"></div>
+
     <div class="anim t-center"><span class="ch">生</span><span class="ch">生</span><span class="ch">不</span><span class="ch">息</span></div>
     <div class="anim t-en">FOREVER ALIVE</div>
     <div class="anim t-line"></div>
@@ -345,23 +377,21 @@
 <script>
 (function(){
   var slider=document.getElementById('slider'),slides=document.querySelectorAll('.slide');
-  var progress=document.getElementById('progress'),dotsWrap=document.getElementById('dots'),hint=document.getElementById('swipeHint');
+  var progress=document.getElementById('progress'),dotsWrap=document.getElementById('dots');
   var total=slides.length,currentIdx=0;
 
   for(var i=0;i<total;i++){var d=document.createElement('div');d.className='dot'+(i===0?' active':'');dotsWrap.appendChild(d);}
   var dots=dotsWrap.querySelectorAll('.dot');
 
   function updateUI(idx){progress.style.width=((idx+1)/total*100)+'%';for(var j=0;j<dots.length;j++) dots[j].classList.toggle('active',j===idx);}
-  function showHint(arrow){hint.textContent=arrow;hint.classList.add('show');setTimeout(function(){hint.classList.remove('show')},300);}
 
   function goTo(idx){
     if(idx<0||idx>=total||idx===currentIdx) return;
     slides[currentIdx].classList.remove('active');
-    // 重绘触发动画重播
     void slides[idx].offsetWidth;
     slides[idx].classList.add('active');
     try{if('vibrate' in navigator) navigator.vibrate(15);}catch(e){}
-    showHint(idx<currentIdx?'↑':'↓');currentIdx=idx;updateUI(idx);
+    currentIdx=idx;updateUI(idx);
   }
 
   slides[0].classList.add('active');
@@ -372,12 +402,12 @@
   },{root:slider,threshold:0.5});
   slides.forEach(function(s){io.observe(s);});
 
-  var startY=0,startT=0;
-  slider.addEventListener('touchstart',function(e){startY=e.touches[0].clientY;startT=Date.now();},{passive:true});
+  var startY=0;
+  slider.addEventListener('touchstart',function(e){startY=e.touches[0].clientY;},{passive:true});
   slider.addEventListener('touchend',function(e){
-    var dy=startY-(e.changedTouches[0].clientY),dt=Date.now()-startT;
-    var fast=dt<500&&Math.abs(dy)>40,long=Math.abs(dy)>window.innerHeight*0.25;
-    if(fast||long){var t=currentIdx+(dy>0?1:-1);if(t>=0&&t<total) slider.scrollTo({top:t*window.innerHeight,behavior:'smooth'});}
+    var dy=startY-(e.changedTouches[0].clientY);
+    var fast=Math.abs(dy)>50;
+    if(fast){var t=currentIdx+(dy>0?1:-1);if(t>=0&&t<total) slider.scrollTo({top:t*window.innerHeight,behavior:'smooth'});}
   },{passive:true});
 
   window.addEventListener('keydown',function(e){
@@ -387,11 +417,10 @@
 
   var wheelLock=false;
   slider.addEventListener('wheel',function(e){
-    e.preventDefault();if(wheelLock)return;wheelLock=true;setTimeout(function(){wheelLock=false},500);
+    e.preventDefault();if(wheelLock)return;wheelLock=true;setTimeout(function(){wheelLock=false},600);
     var t=currentIdx+(e.deltaY>0?1:-1);if(t>=0&&t<total) slider.scrollTo({top:t*window.innerHeight,behavior:'smooth'});
   },{passive:false});
 })();
 </script>
 </body>
 </html>
-

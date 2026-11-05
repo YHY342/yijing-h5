@@ -12,6 +12,14 @@ gen_qr.mjs
 package.json
 package-lock.json
 gen_qr.ts
+*.py
+genqr.js
 
 # 二维码（临时文件，不需要部署）
 qrcode.png
+qrcode-*.png
+
+# 临时分析/修复产物
+mask_*.png
+images-clean/
+
