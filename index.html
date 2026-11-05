@@ -318,47 +318,63 @@ html,body,div,section{scrollbar-width:none!important;-ms-overflow-style:none!imp
   var slider=document.getElementById('slider'),slides=document.querySelectorAll('.slide');
   var progress=document.getElementById('progress'),dotsWrap=document.getElementById('dots');
   var total=slides.length,currentIdx=0;
+  var isTouch=matchMedia('(pointer: coarse)').matches;
 
   for(var i=0;i<total;i++){var d=document.createElement('div');d.className='dot'+(i===0?' active':'');dotsWrap.appendChild(d);}
   var dots=dotsWrap.querySelectorAll('.dot');
 
   function updateUI(idx){progress.style.width=((idx+1)/total*100)+'%';for(var j=0;j<dots.length;j++) dots[j].classList.toggle('active',j===idx);}
 
-  function goTo(idx){
+  // 切换 slide：触发动画 + 震动
+  function activate(idx){
     if(idx<0||idx>=total||idx===currentIdx) return;
     slides[currentIdx].classList.remove('active');
-    void slides[idx].offsetWidth;
+    void slides[idx].offsetWidth; // 重绘触发动画重播
     slides[idx].classList.add('active');
     try{if('vibrate' in navigator) navigator.vibrate(15);}catch(e){}
     currentIdx=idx;updateUI(idx);
   }
 
+  // 初始化
   slides[0].classList.add('active');
-  updateUI(0);dotsWrap.classList.add('show');setTimeout(function(){dotsWrap.classList.remove('show')},2000);
+  updateUI(0);
+  dotsWrap.classList.add('show');setTimeout(function(){dotsWrap.classList.remove('show')},2000);
 
-  var io=new IntersectionObserver(function(entries){
-    entries.forEach(function(e){if(e.isIntersecting){var idx=parseInt(e.target.dataset.index,10);if(idx!==currentIdx) goTo(idx);}});
-  },{root:slider,threshold:0.5});
-  slides.forEach(function(s){io.observe(s);});
-
-  var startY=0;
-  slider.addEventListener('touchstart',function(e){startY=e.touches[0].clientY;},{passive:true});
-  slider.addEventListener('touchend',function(e){
-    var dy=startY-(e.changedTouches[0].clientY);
-    var fast=Math.abs(dy)>50;
-    if(fast){var t=currentIdx+(dy>0?1:-1);if(t>=0&&t<total) slider.scrollTo({top:t*window.innerHeight,behavior:'smooth'});}
+  // ===== 移动端：CSS scroll-snap 管滚动，scroll 事件监听当前页 =====
+  var scrollTimer=null;
+  slider.addEventListener('scroll',function(){
+    if(scrollTimer) clearTimeout(scrollTimer);
+    scrollTimer=setTimeout(function(){
+      var h=slider.clientHeight;
+      var idx=Math.round(slider.scrollTop/h);
+      idx=Math.max(0,Math.min(total-1,idx));
+      activate(idx);
+    },80);
   },{passive:true});
 
-  window.addEventListener('keydown',function(e){
-    if(e.key==='ArrowDown'||e.key==='PageDown'){var t=currentIdx+1;if(t<total)slider.scrollTo({top:t*window.innerHeight,behavior:'smooth'});}
-    else if(e.key==='ArrowUp'||e.key==='PageUp'){var t=currentIdx-1;if(t>=0)slider.scrollTo({top:t*window.innerHeight,behavior:'smooth'});}
-  });
+  // ===== 桌面端 wheel：JS 接管，用 scroll-snap 也可以，但我们手动锁一下 =====
+  if(!isTouch){
+    var wheelLock=false;
+    slider.addEventListener('wheel',function(e){
+      e.preventDefault();
+      if(wheelLock) return;
+      wheelLock=true;
+      setTimeout(function(){wheelLock=false},700);
+      var t=currentIdx+(e.deltaY>0?1:-1);
+      if(t>=0&&t<total){
+        slider.scrollTo({top:t*slider.clientHeight,behavior:'smooth'});
+        activate(t);
+      }
+    },{passive:false});
 
-  var wheelLock=false;
-  slider.addEventListener('wheel',function(e){
-    e.preventDefault();if(wheelLock)return;wheelLock=true;setTimeout(function(){wheelLock=false},600);
-    var t=currentIdx+(e.deltaY>0?1:-1);if(t>=0&&t<total) slider.scrollTo({top:t*window.innerHeight,behavior:'smooth'});
-  },{passive:false});
+    // 键盘
+    window.addEventListener('keydown',function(e){
+      if(e.key==='ArrowDown'||e.key==='PageDown'||e.key===' '){var t=currentIdx+1;if(t<total){slider.scrollTo({top:t*slider.clientHeight,behavior:'smooth'});activate(t);}}
+      else if(e.key==='ArrowUp'||e.key==='PageUp'){var t=currentIdx-1;if(t>=0){slider.scrollTo({top:t*slider.clientHeight,behavior:'smooth'});activate(t);}}
+      else if(e.key==='Home'){slider.scrollTo({top:0,behavior:'smooth'});activate(0);}
+      else if(e.key==='End'){var last=total-1;slider.scrollTo({top:last*slider.clientHeight,behavior:'smooth'});activate(last);}
+    });
+  }
 })();
 </script>
 </body>
