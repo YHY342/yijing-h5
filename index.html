@@ -9,8 +9,9 @@
 <style>
   *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
   html,body{width:100%;height:100%;overflow:hidden;background:#0a0a0a;color:#fff}
-  /* 全局隐藏所有滚动条 */
-  html,body,div,section,::-webkit-scrollbar{scrollbar-width:none!important;-ms-overflow-style:none!important;display:none!important;width:0!important;height:0!important}
+  /* 只隐藏滚动条，别把 div/section 全隐藏！ */
+  html,body,div,section{scrollbar-width:none!important;-ms-overflow-style:none!important}
+  ::-webkit-scrollbar{display:none!important;width:0!important;height:0!important;background:transparent!important}
 
   /* ========== 滑动容器 ========== */
   .slider{
@@ -18,9 +19,7 @@
     scroll-snap-type:y mandatory;
     scroll-behavior:auto;
     -webkit-overflow-scrolling:touch;
-    opacity:0;transition:opacity .5s ease;
   }
-  body.loaded .slider{opacity:1}
 
   /* ========== 每一页：图片全屏铺满 ========== */
   .slide{
