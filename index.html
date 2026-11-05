@@ -29,45 +29,43 @@
   .slider{height:100vh;overflow-y:auto;overflow-x:hidden;scroll-snap-type:y mandatory;
     scroll-behavior:auto;-webkit-overflow-scrolling:touch}
   .slide{position:relative;height:100vh;scroll-snap-align:start;overflow:hidden;background:#0a0a0a}
-  /* 底层：完整原图，静止 */
-  .slide .bg{position:absolute;inset:0;background-image:var(--img);background-size:cover;background-position:center}
 
-  /* ========== 局部切片（动起来） ========== */
-  .slice{position:absolute;inset:0;background-image:var(--img);background-size:cover;background-position:center;
+  /* ========== 只有切片！没有底层图！切片拼出完整画面 ========== */
+  .piece{position:absolute;inset:0;background-image:var(--img);background-size:cover;background-position:center;
     opacity:0;pointer-events:none;
-    transition:opacity .7s ease,transform .9s cubic-bezier(.34,1.56,.64,1)}
-  .slide.active .slice{opacity:1}
+    transition:opacity .7s ease,transform .95s cubic-bezier(.22,1.2,.36,1)}
+  .slide.active .piece{opacity:1;transition:opacity .6s ease,transform .95s cubic-bezier(.22,1.2,.36,1)}
 
-  /* ---------- 封面（让彝境大字、描述、SCROLL 依次弹入） ---------- */
-  /* 顶部栏（中国·彝族、01/09） */
-  .cover .s-top{clip-path:inset(0 0 86% 0);transform:translateY(-24px)}
-  /* 主标题区（彝境 + YI CULTURAL HERITAGE）：精准对准！ */
-  .cover .s-title{clip-path:polygon(10% 16%,62% 16%,62% 44%,10% 44%);transform:translateY(36px) scale(.94);transition-delay:.18s}
-  /* 副描述（让千年的火） */
-  .cover .s-sub{clip-path:polygon(10% 52%,55% 52%,55% 66%,10% 66%);transform:translateY(24px);transition-delay:.42s}
-  /* 底部栏（彝族非遗 + SCROLL） */
-  .cover .s-bot{clip-path:inset(82% 0 0 0);transform:translateY(18px);transition-delay:.66s}
-  .cover.active .s-top,.cover.active .s-title,.cover.active .s-sub,.cover.active .s-bot{transform:none}
+  /* ---------- 封面切片 ---------- */
+  /* p1: 顶部 0~14%（中国·彝族、01/09） */
+  .cover .p1{clip-path:inset(0 0 86% 0);transform:translateY(-30px)}
+  /* p2: 大字区 14~46% 高，10~62% 宽（彝境 + YI CULTURAL HERITAGE） */
+  .cover .p2{clip-path:polygon(10% 14%,62% 14%,62% 46%,10% 46%);transform:translateY(50px) scale(.9);transition-delay:.18s}
+  /* p3: 描述 46~66% 高，10~56% 宽（让千年的火） */
+  .cover .p3{clip-path:polygon(10% 48%,56% 48%,56% 64%,10% 64%);transform:translateY(30px);transition-delay:.42s}
+  /* p4: 底部 82~100%（彝族非遗 + SCROLL） */
+  .cover .p4{clip-path:inset(82% 0 0 0);transform:translateY(20px);transition-delay:.66s}
+  .cover.active .p1,.cover.active .p2,.cover.active .p3,.cover.active .p4{transform:none}
 
-  /* ---------- 内页（左标题 + 右描述 独立进场） ---------- */
-  /* 顶部栏（02/09 等） */
-  .inner .s-top{clip-path:inset(0 0 86% 0);transform:translateY(-16px);transition-delay:.08s}
-  /* 左标题区：对准红圈！中文主标题 + 英文副标题 + 金色分割线 */
-  .inner .s-title{clip-path:polygon(8% 10%,46% 10%,46% 44%,8% 44%);transform:translateX(-40px);transition-delay:.18s}
-  /* 右描述区：对准红圈！右侧的描述文字段落 */
-  .inner .s-desc{clip-path:polygon(46% 20%,96% 20%,96% 62%,46% 62%);transform:translateX(40px);transition-delay:.38s}
-  /* 底部按钮 */
-  .inner .s-bot{clip-path:inset(84% 0 0 0);transform:translateY(14px);transition-delay:.56s}
-  .inner.active .s-top,.inner.active .s-title,.inner.active .s-desc,.inner.active .s-bot{transform:none}
+  /* ---------- 内页切片（左标题 + 右描述 独立进场） ---------- */
+  /* p1: 顶部栏 0~14% */
+  .inner .p1{clip-path:inset(0 0 86% 0);transform:translateY(-22px);transition-delay:.08s}
+  /* p2: 左标题区（红圈！）：8~46% 宽 × 10~44% 高 */
+  .inner .p2{clip-path:polygon(8% 10%,46% 10%,46% 44%,8% 44%);transform:translateX(-60px);transition-delay:.18s}
+  /* p3: 右描述区（红圈！）：46~96% 宽 × 20~62% 高 */
+  .inner .p3{clip-path:polygon(46% 20%,96% 20%,96% 62%,46% 62%);transform:translateX(60px);transition-delay:.38s}
+  /* p4: 底部 84~100% */
+  .inner .p4{clip-path:inset(84% 0 0 0);transform:translateY(22px);transition-delay:.56s}
+  .inner.active .p1,.inner.active .p2,.inner.active .p3,.inner.active .p4{transform:none}
 
-  /* ---------- 结尾（生生不息 + 底部） ---------- */
-  .ending .s-center{clip-path:polygon(26% 18%,74% 18%,74% 50%,26% 50%);transform:scale(.88) translateY(20px);transition-delay:.15s}
-  .ending .s-bot{clip-path:inset(72% 0 0 0);transform:translateY(18px);transition-delay:.42s}
-  .ending.active .s-center,.ending.active .s-bot{transform:none}
+  /* ---------- 结尾切片 ---------- */
+  .ending .p1{clip-path:polygon(26% 18%,74% 18%,74% 50%,26% 50%);transform:scale(.8) translateY(30px);transition-delay:.15s}
+  .ending .p2{clip-path:inset(72% 0 0 0);transform:translateY(22px);transition-delay:.42s}
+  .ending.active .p1,.ending.active .p2{transform:none}
 
-  /* Ken Burns 整体呼吸缩放 */
-  .slide .bg{animation:kenburns 8s ease-out forwards}
-  @keyframes kenburns{0%{transform:scale(1.06)}100%{transform:scale(1)}}
+  /* Ken Burns 微缩放（所有切片一起） */
+  .slide.active{animation:kenburns 6s ease-out forwards}
+  @keyframes kenburns{0%{background-size:106% 106%}100%{background-size:100% 100%}}
 
   .swipe-hint{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);
     width:70px;height:70px;border-radius:50%;
@@ -89,89 +87,80 @@
   <!-- ============ Slide 1: 封面 ============ -->
   <section class="slide cover active" data-index="0"
     style="--img:url('https://cdn.jsdelivr.net/gh/YHY342/yijing-h5@gh-pages/images/01-yijing.png')">
-    <div class="bg"></div>
-    <div class="slice s-top"></div>
-    <div class="slice s-title"></div>
-    <div class="slice s-sub"></div>
-    <div class="slice s-bot"></div>
+    <div class="piece p1"></div>
+    <div class="piece p2"></div>
+    <div class="piece p3"></div>
+    <div class="piece p4"></div>
   </section>
 
   <!-- ============ Slide 2: 远古回响 ============ -->
   <section class="slide inner" data-index="1"
     style="--img:url('https://cdn.jsdelivr.net/gh/YHY342/yijing-h5@gh-pages/images/02-huixiang.png')">
-    <div class="bg"></div>
-    <div class="slice s-top"></div>
-    <div class="slice s-title"></div>
-    <div class="slice s-desc"></div>
-    <div class="slice s-bot"></div>
+    <div class="piece p1"></div>
+    <div class="piece p2"></div>
+    <div class="piece p3"></div>
+    <div class="piece p4"></div>
   </section>
 
   <!-- ============ Slide 3: 火之图腾 ============ -->
   <section class="slide inner" data-index="2"
     style="--img:url('https://cdn.jsdelivr.net/gh/YHY342/yijing-h5@gh-pages/images/03-huotuteng.png')">
-    <div class="bg"></div>
-    <div class="slice s-top"></div>
-    <div class="slice s-title"></div>
-    <div class="slice s-desc"></div>
-    <div class="slice s-bot"></div>
+    <div class="piece p1"></div>
+    <div class="piece p2"></div>
+    <div class="piece p3"></div>
+    <div class="piece p4"></div>
   </section>
 
   <!-- ============ Slide 4: 指尖生花 ============ -->
   <section class="slide inner" data-index="3"
     style="--img:url('https://cdn.jsdelivr.net/gh/YHY342/yijing-h5@gh-pages/images/04-zhijian.png')">
-    <div class="bg"></div>
-    <div class="slice s-top"></div>
-    <div class="slice s-title"></div>
-    <div class="slice s-desc"></div>
-    <div class="slice s-bot"></div>
+    <div class="piece p1"></div>
+    <div class="piece p2"></div>
+    <div class="piece p3"></div>
+    <div class="piece p4"></div>
   </section>
 
   <!-- ============ Slide 5: 黑与红 ============ -->
   <section class="slide inner" data-index="4"
     style="--img:url('https://cdn.jsdelivr.net/gh/YHY342/yijing-h5@gh-pages/images/05-heiuhong.png')">
-    <div class="bg"></div>
-    <div class="slice s-top"></div>
-    <div class="slice s-title"></div>
-    <div class="slice s-desc"></div>
-    <div class="slice s-bot"></div>
+    <div class="piece p1"></div>
+    <div class="piece p2"></div>
+    <div class="piece p3"></div>
+    <div class="piece p4"></div>
   </section>
 
   <!-- ============ Slide 6: 漆韵千年 ============ -->
   <section class="slide inner" data-index="5"
     style="--img:url('https://cdn.jsdelivr.net/gh/YHY342/yijing-h5@gh-pages/images/06-qiyun.png')">
-    <div class="bg"></div>
-    <div class="slice s-top"></div>
-    <div class="slice s-title"></div>
-    <div class="slice s-desc"></div>
-    <div class="slice s-bot"></div>
+    <div class="piece p1"></div>
+    <div class="piece p2"></div>
+    <div class="piece p3"></div>
+    <div class="piece p4"></div>
   </section>
 
   <!-- ============ Slide 7: 银饰之美 ============ -->
   <section class="slide inner" data-index="6"
     style="--img:url('https://cdn.jsdelivr.net/gh/YHY342/yijing-h5@gh-pages/images/07-yinshi.png')">
-    <div class="bg"></div>
-    <div class="slice s-top"></div>
-    <div class="slice s-title"></div>
-    <div class="slice s-desc"></div>
-    <div class="slice s-bot"></div>
+    <div class="piece p1"></div>
+    <div class="piece p2"></div>
+    <div class="piece p3"></div>
+    <div class="piece p4"></div>
   </section>
 
   <!-- ============ Slide 8: 新生传承 ============ -->
   <section class="slide inner" data-index="7"
     style="--img:url('https://cdn.jsdelivr.net/gh/YHY342/yijing-h5@gh-pages/images/08-xinsheng.png')">
-    <div class="bg"></div>
-    <div class="slice s-top"></div>
-    <div class="slice s-title"></div>
-    <div class="slice s-desc"></div>
-    <div class="slice s-bot"></div>
+    <div class="piece p1"></div>
+    <div class="piece p2"></div>
+    <div class="piece p3"></div>
+    <div class="piece p4"></div>
   </section>
 
   <!-- ============ Slide 9: 生生不息 ============ -->
   <section class="slide ending" data-index="8"
     style="--img:url('https://cdn.jsdelivr.net/gh/YHY342/yijing-h5@gh-pages/images/09-shengsheng.png')">
-    <div class="bg"></div>
-    <div class="slice s-center"></div>
-    <div class="slice s-bot"></div>
+    <div class="piece p1"></div>
+    <div class="piece p2"></div>
   </section>
 
 </div>
