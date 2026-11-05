@@ -7,7 +7,7 @@
 <title>彝境 · YI CULTURAL HERITAGE</title>
 <style>
   *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-  html,body{width:100%;height:100%;overflow:hidden;background:#0a0a0a;color:#fff;font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Noto Serif SC","STSong",serif}
+  html,body{width:100%;height:100%;overflow:hidden;background:#0a0a0a;font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Noto Serif SC","STSong",serif}
   html,body,div,section{scrollbar-width:none!important;-ms-overflow-style:none!important}
   ::-webkit-scrollbar{display:none!important;width:0!important;height:0!important;background:transparent!important}
 
@@ -28,63 +28,39 @@
 
   .slider{height:100vh;overflow-y:auto;overflow-x:hidden;scroll-snap-type:y mandatory;
     scroll-behavior:auto;-webkit-overflow-scrolling:touch}
-  .slide{position:relative;height:100vh;scroll-snap-align:start;overflow:hidden}
-  /* 图片：默认不模糊，active 瞬间给 blur 让原图字变糊，settled 恢复清晰 */
-  .slide img{position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover;
-    pointer-events:none;-webkit-user-drag:none;user-select:none;
-    transform:scale(1);
-    filter:none;transition:filter 1.6s ease,transform 2.5s cubic-bezier(.16,1,.3,1)}
-  .slide.active img{filter:blur(22px) brightness(.65)}
-  .slide.active.settled img{filter:none}
-  .slide.active img{transform:scale(1.02)}
+  .slide{position:relative;height:100vh;scroll-snap-align:start;overflow:hidden;background:#0a0a0a}
 
-  /* 动画层：默认隐藏，active 时进场动画，settled 淡出 */
-  .anim{position:absolute;z-index:10;pointer-events:none;opacity:0}
-  .slide.active .anim{opacity:1;transition:opacity .1s}
-  .slide.active.settled .anim{opacity:0;transition:opacity .6s ease}
+  /* ========== 图片切片：同一张图，每块不同 clip-path + 独立进场 ========== */
+  .slice{position:absolute;top:0;left:0;width:100%;height:100%;
+    background-image:var(--img);background-size:cover;background-position:center;background-repeat:no-repeat;
+    opacity:0;transition:opacity .8s ease,transform .9s cubic-bezier(.16,1,.3,1)}
+  .slide.active .slice{opacity:1}
 
-  .title-cn{font-size:40px;font-weight:900;letter-spacing:5px;line-height:1.2;
-    color:#fff;text-shadow:0 0 18px rgba(232,200,122,.8),0 0 36px rgba(232,200,122,.4);
-    font-family:"Noto Serif SC","STSong","Songti SC",serif}
-  .title-cn .ch{display:inline-block;opacity:0;transform:translateY(22px) rotateX(-45deg);
-    transition:opacity .5s ease,transform .65s cubic-bezier(.34,1.56,.64,1)}
-  .slide.active:not(.settled) .title-cn .ch{opacity:1;transform:none}
-  .slide.active:not(.settled) .title-cn .ch:nth-child(1){transition-delay:.12s}
-  .slide.active:not(.settled) .title-cn .ch:nth-child(2){transition-delay:.24s}
-  .slide.active:not(.settled) .title-cn .ch:nth-child(3){transition-delay:.36s}
-  .slide.active:not(.settled) .title-cn .ch:nth-child(4){transition-delay:.48s}
-  .slide.active:not(.settled) .title-cn .ch:nth-child(5){transition-delay:.60s}
+  /* ---------- 封面切片（让彝境大字、描述、底部依次进场） ---------- */
+  .cover .slice-top{clip-path:inset(0 0 86% 0);transform:translateY(-20px)}
+  .cover .slice-big {clip-path:inset(14% 0 56% 0);transform:translateY(30px) scale(.96);transition-delay:.18s}
+  .cover .slice-mid {clip-path:inset(44% 0 18% 0);transform:translateY(22px);transition-delay:.42s}
+  .cover .slice-bot {clip-path:inset(82% 0 0 0);transform:translateY(16px);transition-delay:.66s}
+  .cover.active .slice-top,.cover.active .slice-big,.cover.active .slice-mid,.cover.active .slice-bot{transform:none}
 
-  .cover .title-cn{font-size:88px;letter-spacing:16px}
+  /* ---------- 内页切片（整体主图先进场 → 左标题 → 右描述 → 底部按钮） ---------- */
+  .inner .slice-main{clip-path:inset(0);transform:scale(1.05);filter:brightness(.45)}
+  .inner.active .slice-main{transform:scale(1);filter:none;transition:filter 1.2s ease}
+  .inner .slice-top{clip-path:inset(0 0 86% 0);transform:translateY(-14px);transition-delay:.12s}
+  .inner .slice-left{clip-path:polygon(0 10%,42% 10%,42% 44%,0 44%);transform:translateX(-32px);transition-delay:.18s}
+  .inner .slice-right{clip-path:polygon(44% 18%,100% 18%,100% 60%,44% 60%);transform:translateX(32px);transition-delay:.36s}
+  .inner .slice-bot{clip-path:inset(84% 0 0 0);transform:translateY(14px);transition-delay:.54s}
+  .inner.active .slice-top,.inner.active .slice-left,.inner.active .slice-right,.inner.active .slice-bot{transform:none}
 
-  .title-en{font-size:11px;font-weight:500;letter-spacing:4px;color:rgba(255,255,255,.9);
-    text-transform:uppercase;margin-top:12px}
-  .title-en .en{display:inline-block;opacity:0;transform:translateY(8px);margin-right:2px;
-    transition:opacity .38s ease,transform .42s cubic-bezier(.16,1,.3,1)}
-  .slide.active:not(.settled) .title-en .en{opacity:1;transform:none}
+  /* ---------- 结尾切片 ---------- */
+  .ending .slice-center{clip-path:polygon(26% 18%,74% 18%,74% 50%,26% 50%);transform:scale(.88) translateY(20px);transition-delay:.15s}
+  .ending .slice-bot{clip-path:inset(72% 0 0 0);transform:translateY(16px);transition-delay:.40s}
+  .ending.active .slice-center,.ending.active .slice-bot{transform:none}
 
-  .gold-line{width:0%;height:2px;margin-top:14px;border-radius:1px;
-    background:linear-gradient(90deg,#e8c87a,#f6e3a7,#e8c87a);
-    box-shadow:0 0 10px rgba(232,200,122,.6)}
-  .slide.active:not(.settled) .gold-line{width:55%;transition:width .9s cubic-bezier(.16,1,.3,1) .32s}
-
-  .desc{font-size:13px;line-height:1.8;color:rgba(255,255,255,.9);margin-top:16px;max-width:220px}
-  .desc p{opacity:0;transform:translateY(10px);transition:opacity .5s ease,transform .5s cubic-bezier(.16,1,.3,1)}
-  .slide.active:not(.settled) .desc p{opacity:1;transform:none}
-  .slide.active:not(.settled) .desc p:nth-child(1){transition-delay:.62s}
-  .slide.active:not(.settled) .desc p:nth-child(2){transition-delay:.76s}
-  .slide.active:not(.settled) .desc p:nth-child(3){transition-delay:.90s}
-
-  .cover-desc{font-size:15px;color:rgba(255,255,255,.92);letter-spacing:3px;margin-top:26px;
-    opacity:0;transform:translateY(15px);transition:opacity .8s ease 1.05s,transform .8s cubic-bezier(.16,1,.3,1) 1.05s}
-  .slide.active:not(.settled) .cover-desc{opacity:1;transform:none}
-
-  .shimmer{position:relative;display:inline-block;overflow:hidden}
-  .shimmer::after{content:"";position:absolute;top:0;left:-120%;width:60%;height:100%;
-    background:linear-gradient(90deg,transparent,rgba(255,255,255,.6),transparent);
-    transform:skewX(-20deg);animation:shimmerMove 1.6s ease-in-out 0s 1;opacity:0}
-  .slide.active:not(.settled) .shimmer::after{opacity:1}
-  @keyframes shimmerMove{0%{left:-120%}100%{left:130%}}
+  /* Ken Burns 微缩放（active 后慢放） */
+  .slide::after{content:"";position:absolute;inset:0;background:var(--img);background-size:105%;background-position:center;
+    opacity:0;pointer-events:none;transition:opacity .6s,background-size 5s ease-out;z-index:-1}
+  .slide.active::after{opacity:.0;/* 占位 */}
 
   .swipe-hint{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);
     width:70px;height:70px;border-radius:50%;
@@ -103,137 +79,90 @@
 
 <div class="slider" id="slider">
 
-  <!-- ==================== Slide 1: 封面 ==================== -->
-  <section class="slide cover active" data-index="0">
-    <img src="https://cdn.jsdelivr.net/gh/YHY342/yijing-h5@gh-pages/images/01-yijing.png" alt="彝境">
-    <div class="anim" style="left:12%;top:28%">
-      <div class="title-cn"><span class="shimmer"><span class="ch">彝</span><span class="ch">境</span></span></div>
-      <div class="title-en">
-        <span class="en" style="transition-delay:.48s">YI</span>
-        <span class="en" style="transition-delay:.56s">CULTURAL</span>
-        <span class="en" style="transition-delay:.64s">HERITAGE</span>
-      </div>
-      <div class="gold-line"></div>
-      <div class="cover-desc">让千年的火，继续燃烧。</div>
-    </div>
+  <!-- ============ Slide 1: 封面 ============ -->
+  <section class="slide cover active" data-index="0"
+    style="--img:url('https://cdn.jsdelivr.net/gh/YHY342/yijing-h5@gh-pages/images/01-yijing.png')">
+    <div class="slice slice-top"></div>
+    <div class="slice slice-big"></div>
+    <div class="slice slice-mid"></div>
+    <div class="slice slice-bot"></div>
   </section>
 
-  <!-- ==================== Slide 2: 远古回响 ==================== -->
-  <section class="slide" data-index="1">
-    <img src="https://cdn.jsdelivr.net/gh/YHY342/yijing-h5@gh-pages/images/02-huixiang.png" alt="远古回响">
-    <div class="anim" style="left:12%;top:18%">
-      <div class="title-cn"><span class="ch">远</span><span class="ch">古</span><span class="ch">回</span><span class="ch">响</span></div>
-      <div class="title-en">
-        <span class="en" style="transition-delay:.42s">THE</span>
-        <span class="en" style="transition-delay:.50s">ECHO</span>
-        <span class="en" style="transition-delay:.58s">OF</span>
-        <span class="en" style="transition-delay:.66s">ANCIENT</span>
-        <span class="en" style="transition-delay:.74s">TIMES</span>
-      </div>
-      <div class="gold-line"></div>
-    </div>
+  <!-- ============ Slide 2: 远古回响 ============ -->
+  <section class="slide inner" data-index="1"
+    style="--img:url('https://cdn.jsdelivr.net/gh/YHY342/yijing-h5@gh-pages/images/02-huixiang.png')">
+    <div class="slice slice-main"></div>
+    <div class="slice slice-top"></div>
+    <div class="slice slice-left"></div>
+    <div class="slice slice-right"></div>
+    <div class="slice slice-bot"></div>
   </section>
 
-  <!-- ==================== Slide 3: 火之图腾 ==================== -->
-  <section class="slide" data-index="2">
-    <img src="https://cdn.jsdelivr.net/gh/YHY342/yijing-h5@gh-pages/images/03-huotuteng.png" alt="火之图腾">
-    <div class="anim" style="left:12%;top:18%">
-      <div class="title-cn"><span class="ch">火</span><span class="ch">之</span><span class="ch">图</span><span class="ch">腾</span></div>
-      <div class="title-en">
-        <span class="en" style="transition-delay:.42s">THE</span>
-        <span class="en" style="transition-delay:.50s">FIRE</span>
-        <span class="en" style="transition-delay:.58s">TOTEM</span>
-      </div>
-      <div class="gold-line"></div>
-    </div>
+  <!-- ============ Slide 3: 火之图腾 ============ -->
+  <section class="slide inner" data-index="2"
+    style="--img:url('https://cdn.jsdelivr.net/gh/YHY342/yijing-h5@gh-pages/images/03-huotuteng.png')">
+    <div class="slice slice-main"></div>
+    <div class="slice slice-top"></div>
+    <div class="slice slice-left"></div>
+    <div class="slice slice-right"></div>
+    <div class="slice slice-bot"></div>
   </section>
 
-  <!-- ==================== Slide 4: 指尖生花 ==================== -->
-  <section class="slide" data-index="3">
-    <img src="https://cdn.jsdelivr.net/gh/YHY342/yijing-h5@gh-pages/images/04-zhijian.png" alt="指尖生花">
-    <div class="anim" style="left:12%;top:18%">
-      <div class="title-cn"><span class="ch">指</span><span class="ch">尖</span><span class="ch">生</span><span class="ch">花</span></div>
-      <div class="title-en">
-        <span class="en" style="transition-delay:.42s">BLOOMING</span>
-        <span class="en" style="transition-delay:.50s">AT</span>
-        <span class="en" style="transition-delay:.58s">YOUR</span>
-        <span class="en" style="transition-delay:.66s">FINGERTIPS</span>
-      </div>
-      <div class="gold-line"></div>
-    </div>
+  <!-- ============ Slide 4: 指尖生花 ============ -->
+  <section class="slide inner" data-index="3"
+    style="--img:url('https://cdn.jsdelivr.net/gh/YHY342/yijing-h5@gh-pages/images/04-zhijian.png')">
+    <div class="slice slice-main"></div>
+    <div class="slice slice-top"></div>
+    <div class="slice slice-left"></div>
+    <div class="slice slice-right"></div>
+    <div class="slice slice-bot"></div>
   </section>
 
-  <!-- ==================== Slide 5: 黑与红 ==================== -->
-  <section class="slide" data-index="4">
-    <img src="https://cdn.jsdelivr.net/gh/YHY342/yijing-h5@gh-pages/images/05-heiuhong.png" alt="黑与红">
-    <div class="anim" style="left:12%;top:18%">
-      <div class="title-cn"><span class="ch">黑</span><span class="ch">与</span><span class="ch">红</span></div>
-      <div class="title-en">
-        <span class="en" style="transition-delay:.42s">THE</span>
-        <span class="en" style="transition-delay:.50s">COLORS</span>
-        <span class="en" style="transition-delay:.58s">OF</span>
-        <span class="en" style="transition-delay:.66s">YI</span>
-      </div>
-      <div class="gold-line"></div>
-    </div>
+  <!-- ============ Slide 5: 黑与红 ============ -->
+  <section class="slide inner" data-index="4"
+    style="--img:url('https://cdn.jsdelivr.net/gh/YHY342/yijing-h5@gh-pages/images/05-heiuhong.png')">
+    <div class="slice slice-main"></div>
+    <div class="slice slice-top"></div>
+    <div class="slice slice-left"></div>
+    <div class="slice slice-right"></div>
+    <div class="slice slice-bot"></div>
   </section>
 
-  <!-- ==================== Slide 6: 漆韵千年 ==================== -->
-  <section class="slide" data-index="5">
-    <img src="https://cdn.jsdelivr.net/gh/YHY342/yijing-h5@gh-pages/images/06-qiyun.png" alt="漆韵千年">
-    <div class="anim" style="left:12%;top:18%">
-      <div class="title-cn"><span class="ch">漆</span><span class="ch">韵</span><span class="ch">千</span><span class="ch">年</span></div>
-      <div class="title-en">
-        <span class="en" style="transition-delay:.42s">THE</span>
-        <span class="en" style="transition-delay:.50s">RHYTHM</span>
-        <span class="en" style="transition-delay:.58s">OF</span>
-        <span class="en" style="transition-delay:.66s">LACQUER</span>
-      </div>
-      <div class="gold-line"></div>
-    </div>
+  <!-- ============ Slide 6: 漆韵千年 ============ -->
+  <section class="slide inner" data-index="5"
+    style="--img:url('https://cdn.jsdelivr.net/gh/YHY342/yijing-h5@gh-pages/images/06-qiyun.png')">
+    <div class="slice slice-main"></div>
+    <div class="slice slice-top"></div>
+    <div class="slice slice-left"></div>
+    <div class="slice slice-right"></div>
+    <div class="slice slice-bot"></div>
   </section>
 
-  <!-- ==================== Slide 7: 银饰之美 ==================== -->
-  <section class="slide" data-index="6">
-    <img src="https://cdn.jsdelivr.net/gh/YHY342/yijing-h5@gh-pages/images/07-yinshi.png" alt="银饰之美">
-    <div class="anim" style="left:12%;top:18%">
-      <div class="title-cn"><span class="ch">银</span><span class="ch">饰</span><span class="ch">之</span><span class="ch">美</span></div>
-      <div class="title-en">
-        <span class="en" style="transition-delay:.42s">THE</span>
-        <span class="en" style="transition-delay:.50s">BEAUTY</span>
-        <span class="en" style="transition-delay:.58s">OF</span>
-        <span class="en" style="transition-delay:.66s">SILVER</span>
-      </div>
-      <div class="gold-line"></div>
-    </div>
+  <!-- ============ Slide 7: 银饰之美 ============ -->
+  <section class="slide inner" data-index="6"
+    style="--img:url('https://cdn.jsdelivr.net/gh/YHY342/yijing-h5@gh-pages/images/07-yinshi.png')">
+    <div class="slice slice-main"></div>
+    <div class="slice slice-top"></div>
+    <div class="slice slice-left"></div>
+    <div class="slice slice-right"></div>
+    <div class="slice slice-bot"></div>
   </section>
 
-  <!-- ==================== Slide 8: 新生传承 ==================== -->
-  <section class="slide" data-index="7">
-    <img src="https://cdn.jsdelivr.net/gh/YHY342/yijing-h5@gh-pages/images/08-xinsheng.png" alt="新生传承">
-    <div class="anim" style="left:12%;top:18%">
-      <div class="title-cn"><span class="ch">新</span><span class="ch">生</span><span class="ch">传</span><span class="ch">承</span></div>
-      <div class="title-en">
-        <span class="en" style="transition-delay:.42s">INHERITANCE</span>
-        <span class="en" style="transition-delay:.50s">AND</span>
-        <span class="en" style="transition-delay:.58s">INNOVATION</span>
-      </div>
-      <div class="gold-line"></div>
-    </div>
+  <!-- ============ Slide 8: 新生传承 ============ -->
+  <section class="slide inner" data-index="7"
+    style="--img:url('https://cdn.jsdelivr.net/gh/YHY342/yijing-h5@gh-pages/images/08-xinsheng.png')">
+    <div class="slice slice-main"></div>
+    <div class="slice slice-top"></div>
+    <div class="slice slice-left"></div>
+    <div class="slice slice-right"></div>
+    <div class="slice slice-bot"></div>
   </section>
 
-  <!-- ==================== Slide 9: 生生不息 ==================== -->
-  <section class="slide" data-index="8">
-    <img src="https://cdn.jsdelivr.net/gh/YHY342/yijing-h5@gh-pages/images/09-shengsheng.png" alt="生生不息">
-    <div class="anim" style="left:32%;top:28%">
-      <div class="title-cn"><span class="shimmer"><span class="ch">生</span><span class="ch">生</span><span class="ch">不</span><span class="ch">息</span></span></div>
-      <div class="title-en">
-        <span class="en" style="transition-delay:.48s">FOREVER</span>
-        <span class="en" style="transition-delay:.56s">ALIVE</span>
-      </div>
-      <div class="gold-line"></div>
-      <div class="cover-desc">文化不止于被看见</div>
-    </div>
+  <!-- ============ Slide 9: 生生不息 ============ -->
+  <section class="slide ending" data-index="8"
+    style="--img:url('https://cdn.jsdelivr.net/gh/YHY342/yijing-h5@gh-pages/images/09-shengsheng.png')">
+    <div class="slice slice-center"></div>
+    <div class="slice slice-bot"></div>
   </section>
 
 </div>
@@ -243,7 +172,6 @@
   var slider=document.getElementById('slider'),slides=document.querySelectorAll('.slide');
   var progress=document.getElementById('progress'),dotsWrap=document.getElementById('dots'),hint=document.getElementById('swipeHint');
   var total=slides.length,currentIdx=0;
-  var settleTimer=null;
 
   for(var i=0;i<total;i++){var d=document.createElement('div');d.className='dot'+(i===0?' active':'');dotsWrap.appendChild(d);}
   var dots=dotsWrap.querySelectorAll('.dot');
@@ -253,16 +181,13 @@
 
   function goTo(idx){
     if(idx<0||idx>=total||idx===currentIdx) return;
-    slides[currentIdx].classList.remove('active','settled');
+    slides[currentIdx].classList.remove('active');
     slides[idx].classList.add('active');
-    clearTimeout(settleTimer);
-    settleTimer=setTimeout(function(){slides[idx].classList.add('settled');},2500);
     try{if('vibrate' in navigator) navigator.vibrate(15);}catch(e){}
     showHint(idx<currentIdx?'↑':'↓');currentIdx=idx;updateUI(idx);
   }
 
   slides[0].classList.add('active');
-  settleTimer=setTimeout(function(){slides[0].classList.add('settled');},2500);
   updateUI(0);dotsWrap.classList.add('show');setTimeout(function(){dotsWrap.classList.remove('show')},2000);
 
   var io=new IntersectionObserver(function(entries){
