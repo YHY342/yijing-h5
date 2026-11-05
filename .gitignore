@@ -1,0 +1,17 @@
+# 临时/系统文件
+node_modules/
+*.exe
+*.log
+.DS_Store
+Thumbs.db
+
+# 开发辅助脚本
+split.py
+gen_qr.js
+gen_qr.mjs
+package.json
+package-lock.json
+gen_qr.ts
+
+# 二维码（临时文件，不需要部署）
+qrcode.png
