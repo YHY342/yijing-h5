@@ -4,260 +4,316 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <meta name="theme-color" content="#0c0c0c">
-<meta name="description" content="彝境 · 千年彝族文化遗产 H5 展示">
 <title>彝境 · YI CULTURAL HERITAGE</title>
 <style>
   *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-  html,body{width:100%;height:100%;overflow:hidden;background:#0a0a0a;color:#fff}
+  html,body{width:100%;height:100%;overflow:hidden;background:#0a0a0a;color:#fff;font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Noto Serif SC","STSong",serif}
   html,body,div,section{scrollbar-width:none!important;-ms-overflow-style:none!important}
   ::-webkit-scrollbar{display:none!important;width:0!important;height:0!important;background:transparent!important}
 
   /* ========== 顶部进度条 ========== */
-  .progress{
-    position:fixed;top:0;left:0;height:2px;width:0%;
+  .progress{position:fixed;top:0;left:0;height:2px;width:0%;
     background:linear-gradient(90deg,#e8c87a,#f6e3a7,#e8c87a);
-    box-shadow:0 0 12px rgba(232,200,122,.5);
-    z-index:999;transition:width .45s cubic-bezier(.16,1,.3,1);
-  }
-  .progress::after{
-    content:"";position:absolute;right:-6px;top:-2px;width:6px;height:6px;border-radius:50%;
-    background:#e8c87a;box-shadow:0 0 10px rgba(232,200,122,.9);
-  }
+    box-shadow:0 0 12px rgba(232,200,122,.5);z-index:999;
+    transition:width .5s cubic-bezier(.16,1,.3,1);}
+  .progress::after{content:"";position:absolute;right:-6px;top:-2px;width:6px;height:6px;border-radius:50%;
+    background:#e8c87a;box-shadow:0 0 10px rgba(232,200,122,.9);}
 
-  /* ========== 底部页码圆点（不挡主文字） ========== */
-  .dots{
-    position:fixed;bottom:calc(env(safe-area-inset-bottom) + 18px);
-    left:50%;transform:translateX(-50%);
+  /* ========== 底部页码 ========== */
+  .dots{position:fixed;bottom:calc(env(safe-area-inset-bottom) + 18px);left:50%;transform:translateX(-50%);
     z-index:999;display:flex;gap:8px;padding:6px 14px;
-    background:rgba(0,0,0,.28);
-    backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
-    border-radius:20px;border:1px solid rgba(232,200,122,.18);
-    opacity:0;transition:opacity .4s ease;
-  }
+    background:rgba(0,0,0,.28);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+    border-radius:20px;border:1px solid rgba(232,200,122,.18);opacity:0;transition:opacity .5s}
   .dots.show{opacity:1}
-  .dot{
-    width:4px;height:4px;border-radius:50%;
-    background:rgba(255,255,255,.3);
-    transition:all .4s cubic-bezier(.16,1,.3,1);
-  }
-  .dot.active{
-    width:18px;border-radius:3px;
-    background:linear-gradient(90deg,#e8c87a,#f6e3a7);
-    box-shadow:0 0 8px rgba(232,200,122,.6);
-  }
+  .dot{width:4px;height:4px;border-radius:50%;background:rgba(255,255,255,.3);transition:all .4s cubic-bezier(.16,1,.3,1)}
+  .dot.active{width:18px;border-radius:3px;background:linear-gradient(90deg,#e8c87a,#f6e3a7);box-shadow:0 0 8px rgba(232,200,122,.6)}
 
   /* ========== 滑动容器 ========== */
-  .slider{
-    height:100vh;overflow-y:auto;overflow-x:hidden;
-    scroll-snap-type:y mandatory;
-    scroll-behavior:auto;
-    -webkit-overflow-scrolling:touch;
-  }
-
-  /* ========== 每一页 ========== */
-  .slide{
-    position:relative;height:100vh;
-    scroll-snap-align:start;overflow:hidden;
-  }
-  .slide img{
-    position:absolute;top:0;left:0;
-    width:100%;height:100%;
-    object-fit:cover;
-    pointer-events:none;
-    -webkit-user-drag:none;user-select:none;
-    /* Ken Burns 呼吸缩放：active 页缓慢放大 */
-    transform:scale(1);
-    transition:transform 2.2s cubic-bezier(.16,1,.3,1),
-                filter .6s ease;
-    filter:brightness(1.02);
-  }
+  .slider{height:100vh;overflow-y:auto;overflow-x:hidden;scroll-snap-type:y mandatory;
+    scroll-behavior:auto;-webkit-overflow-scrolling:touch}
+  .slide{position:relative;height:100vh;scroll-snap-align:start;overflow:hidden}
+  .slide img{position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover;
+    pointer-events:none;-webkit-user-drag:none;user-select:none;
+    transform:scale(1);transition:transform 2.5s cubic-bezier(.16,1,.3,1)}
   .slide.active img{transform:scale(1.04)}
-  .slide.prev img{transform:scale(1.02);filter:brightness(.95)}
 
-  /* ========== 翻页 swipe 指示器 ========== */
-  .swipe-hint{
-    position:fixed;left:50%;top:50%;
-    transform:translate(-50%,-50%);
-    width:80px;height:80px;border-radius:50%;
-    border:2px solid rgba(232,200,122,.6);
-    background:rgba(0,0,0,.4);
-    backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
-    z-index:998;pointer-events:none;
-    opacity:0;transition:opacity .2s ease;
-    display:flex;align-items:center;justify-content:center;
-    font-size:28px;color:#e8c87a;
-  }
+  /* ========== 文字覆盖层 ========== */
+  .texter{position:absolute;z-index:10;pointer-events:none;overflow:hidden}
+  /* 所有文字层默认隐藏 + 下移 */
+  .slide .texter{opacity:0;transform:translateY(20px)}
+  /* active 页：文字层弹入 */
+  .slide.active .texter{opacity:1;transform:translateY(0);transition:opacity .6s ease,transform .6s cubic-bezier(.16,1,.3,1)}
+
+  /* ========== 主标题（大字）逐字弹入 ========== */
+  .title-cn{font-size:42px;font-weight:900;letter-spacing:6px;
+    background:linear-gradient(135deg,#f6e3a7 0%,#e8c87a 40%,#c89a4a 60%,#f6e3a7 100%);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    text-shadow:none;filter:drop-shadow(0 2px 12px rgba(232,200,122,.35))}
+  .title-cn .ch{display:inline-block;opacity:0;transform:translateY(20px) rotateX(-40deg);
+    transition:opacity .5s ease,transform .6s cubic-bezier(.34,1.56,.64,1)}
+  .slide.active .title-cn .ch{opacity:1;transform:none}
+  .slide.active .title-cn .ch:nth-child(1){transition-delay:.15s}
+  .slide.active .title-cn .ch:nth-child(2){transition-delay:.28s}
+  .slide.active .title-cn .ch:nth-child(3){transition-delay:.41s}
+  .slide.active .title-cn .ch:nth-child(4){transition-delay:.54s}
+  .slide.active .title-cn .ch:nth-child(5){transition-delay:.67s}
+
+  /* 封面更大 */
+  .cover .title-cn{font-size:88px;letter-spacing:18px}
+
+  /* ========== 英文副标题 ========== */
+  .title-en{font-size:13px;font-weight:400;letter-spacing:4px;color:rgba(255,255,255,.85);
+    text-transform:uppercase;margin-top:10px}
+  .title-en .en{display:inline-block;opacity:0;transform:translateY(8px);transition:opacity .4s ease,transform .45s cubic-bezier(.16,1,.3,1)}
+  .slide.active .title-en .en{opacity:1;transform:none}
+
+  /* ========== 金色分割线 ========== */
+  .gold-line{width:0%;height:2px;margin-top:14px;border-radius:1px;
+    background:linear-gradient(90deg,#e8c87a,#f6e3a7,#e8c87a);
+    box-shadow:0 0 10px rgba(232,200,122,.5)}
+  .slide.active .gold-line{width:60%;transition:width .9s cubic-bezier(.16,1,.3,1) .35s}
+
+  /* ========== 描述文字 ========== */
+  .desc{font-size:14px;line-height:1.9;color:rgba(255,255,255,.9);margin-top:20px;max-width:220px}
+  .desc p{opacity:0;transform:translateY(12px);transition:opacity .55s ease,transform .55s cubic-bezier(.16,1,.3,1)}
+  .slide.active .desc p{opacity:1;transform:none}
+  .slide.active .desc p:nth-child(1){transition-delay:.7s}
+  .slide.active .desc p:nth-child(2){transition-delay:.85s}
+  .slide.active .desc p:nth-child(3){transition-delay:1.0s}
+
+  /* ========== 封面底部 ========== */
+  .cover-desc{font-size:16px;color:rgba(255,255,255,.9);letter-spacing:3px;margin-top:24px;
+    opacity:0;transform:translateY(15px);transition:opacity .8s ease 1.1s,transform .8s cubic-bezier(.16,1,.3,1) 1.1s}
+  .slide.active .cover-desc{opacity:1;transform:none}
+
+  /* ========== 流光扫过（封面大字） ========== */
+  .shimmer{position:relative;display:inline-block;overflow:hidden}
+  .shimmer::after{content:"";position:absolute;top:0;left:-120%;width:60%;height:100%;
+    background:linear-gradient(90deg,transparent,rgba(255,255,255,.45),transparent);
+    transform:skewX(-20deg);animation:shimmerMove 2.2s ease-in-out infinite;
+    opacity:0}
+  .slide.active .shimmer::after{opacity:1}
+  @keyframes shimmerMove{0%{left:-120%}50%{left:130%}100%{left:130%}}
+
+  /* ========== 翻页提示 ========== */
+  .swipe-hint{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);
+    width:70px;height:70px;border-radius:50%;
+    border:2px solid rgba(232,200,122,.6);background:rgba(0,0,0,.4);
+    backdrop-filter:blur(8px);z-index:998;pointer-events:none;
+    opacity:0;display:flex;align-items:center;justify-content:center;
+    font-size:24px;color:#e8c87a;transition:opacity .2s}
   .swipe-hint.show{opacity:1}
 </style>
 </head>
 <body>
 
-<!-- 顶部进度条 -->
 <div class="progress" id="progress"></div>
-<!-- 底部页码 -->
 <div class="dots" id="dots"></div>
-<!-- 翻页提示 -->
 <div class="swipe-hint" id="swipeHint"></div>
 
 <div class="slider" id="slider">
-  <!-- 1 彝境 · 封面 -->
-  <section class="slide active" data-index="0">
+
+  <!-- ==================== Slide 1: 封面 ==================== -->
+  <section class="slide cover active" data-index="0">
     <img src="https://cdn.jsdelivr.net/gh/YHY342/yijing-h5@gh-pages/images/01-yijing.png" alt="彝境">
+    <!-- 覆盖层（精准对齐） -->
+    <div class="texter" style="left:18%;top:28%">
+      <div class="title-cn"><span class="shimmer"><span class="ch">彝</span><span class="ch">境</span></span></div>
+      <div class="title-en"><span class="en" style="transition-delay:.5s">YI</span> <span class="en" style="transition-delay:.6s">CULTURAL</span> <span class="en" style="transition-delay:.7s">HERITAGE</span></div>
+      <div class="gold-line"></div>
+      <div class="cover-desc">让千年的火，继续燃烧。</div>
+    </div>
   </section>
-  <!-- 2 远古回响 -->
+
+  <!-- ==================== Slide 2: 远古回响 ==================== -->
   <section class="slide" data-index="1">
     <img src="https://cdn.jsdelivr.net/gh/YHY342/yijing-h5@gh-pages/images/02-huixiang.png" alt="远古回响">
+    <div class="texter" style="left:16%;top:20%">
+      <div class="title-cn"><span class="ch">远</span><span class="ch">古</span><span class="ch">回</span><span class="ch">响</span></div>
+      <div class="title-en"><span class="en" style="transition-delay:.45s">THE</span> <span class="en" style="transition-delay:.55s">ECHO</span> <span class="en" style="transition-delay:.65s">OF</span> <span class="en" style="transition-delay:.75s">ANCIENT</span> <span class="en" style="transition-delay:.85s">TIMES</span></div>
+      <div class="gold-line"></div>
+    </div>
+    <div class="texter desc" style="left:52%;top:24%">
+      <p>千年传不息</p>
+      <p>彝族的史诗</p>
+      <p>在篝火旁吟唱</p>
+    </div>
   </section>
-  <!-- 3 火之图腾 -->
+
+  <!-- ==================== Slide 3: 火之图腾 ==================== -->
   <section class="slide" data-index="2">
     <img src="https://cdn.jsdelivr.net/gh/YHY342/yijing-h5@gh-pages/images/03-huotuteng.png" alt="火之图腾">
+    <div class="texter" style="left:16%;top:20%">
+      <div class="title-cn"><span class="ch">火</span><span class="ch">之</span><span class="ch">图</span><span class="ch">腾</span></div>
+      <div class="title-en"><span class="en" style="transition-delay:.45s">THE</span> <span class="en" style="transition-delay:.55s">FIRE</span> <span class="en" style="transition-delay:.65s">TOTEM</span></div>
+      <div class="gold-line"></div>
+    </div>
+    <div class="texter desc" style="left:52%;top:24%">
+      <p>火把节</p>
+      <p>火焰是彝族的灵魂</p>
+      <p>照亮千年的夜空</p>
+    </div>
   </section>
-  <!-- 4 指尖生花 -->
+
+  <!-- ==================== Slide 4: 指尖生花 ==================== -->
   <section class="slide" data-index="3">
     <img src="https://cdn.jsdelivr.net/gh/YHY342/yijing-h5@gh-pages/images/04-zhijian.png" alt="指尖生花">
+    <div class="texter" style="left:16%;top:20%">
+      <div class="title-cn"><span class="ch">指</span><span class="ch">尖</span><span class="ch">生</span><span class="ch">花</span></div>
+      <div class="title-en"><span class="en" style="transition-delay:.45s">BLOOMING</span> <span class="en" style="transition-delay:.55s">AT</span> <span class="en" style="transition-delay:.65s">YOUR</span> <span class="en" style="transition-delay:.75s">FINGERTIPS</span></div>
+      <div class="gold-line"></div>
+    </div>
+    <div class="texter desc" style="left:52%;top:24%">
+      <p>彝族刺绣</p>
+      <p>非遗技艺</p>
+      <p>一针一线皆是传承</p>
+    </div>
   </section>
-  <!-- 5 黑与红 -->
+
+  <!-- ==================== Slide 5: 黑与红 ==================== -->
   <section class="slide" data-index="4">
     <img src="https://cdn.jsdelivr.net/gh/YHY342/yijing-h5@gh-pages/images/05-heiuhong.png" alt="黑与红">
+    <div class="texter" style="left:16%;top:20%">
+      <div class="title-cn"><span class="ch">黑</span><span class="ch">与</span><span class="ch">红</span></div>
+      <div class="title-en"><span class="en" style="transition-delay:.45s">THE</span> <span class="en" style="transition-delay:.55s">COLORS</span> <span class="en" style="transition-delay:.65s">OF</span> <span class="en" style="transition-delay:.75s">YI</span></div>
+      <div class="gold-line"></div>
+    </div>
+    <div class="texter desc" style="left:52%;top:24%">
+      <p>黑·大地的庄重</p>
+      <p>红·火焰的生命</p>
+      <p>黄·阳光·希望</p>
+    </div>
   </section>
-  <!-- 6 漆韵千年 -->
+
+  <!-- ==================== Slide 6: 漆韵千年 ==================== -->
   <section class="slide" data-index="5">
     <img src="https://cdn.jsdelivr.net/gh/YHY342/yijing-h5@gh-pages/images/06-qiyun.png" alt="漆韵千年">
+    <div class="texter" style="left:16%;top:20%">
+      <div class="title-cn"><span class="ch">漆</span><span class="ch">韵</span><span class="ch">千</span><span class="ch">年</span></div>
+      <div class="title-en"><span class="en" style="transition-delay:.45s">THE</span> <span class="en" style="transition-delay:.55s">RHYTHM</span> <span class="en" style="transition-delay:.65s">OF</span> <span class="en" style="transition-delay:.75s">LACQUER</span></div>
+      <div class="gold-line"></div>
+    </div>
+    <div class="texter desc" style="left:52%;top:24%">
+      <p>选材 | 制胎</p>
+      <p>上漆 | 彩绘</p>
+      <p>漆韵千年</p>
+    </div>
   </section>
-  <!-- 7 银饰之美 -->
+
+  <!-- ==================== Slide 7: 银饰之美 ==================== -->
   <section class="slide" data-index="6">
     <img src="https://cdn.jsdelivr.net/gh/YHY342/yijing-h5@gh-pages/images/07-yinshi.png" alt="银饰之美">
+    <div class="texter" style="left:16%;top:20%">
+      <div class="title-cn"><span class="ch">银</span><span class="ch">饰</span><span class="ch">之</span><span class="ch">美</span></div>
+      <div class="title-en"><span class="en" style="transition-delay:.45s">THE</span> <span class="en" style="transition-delay:.55s">BEAUTY</span> <span class="en" style="transition-delay:.65s">OF</span> <span class="en" style="transition-delay:.75s">SILVER</span></div>
+      <div class="gold-line"></div>
+    </div>
+    <div class="texter desc" style="left:52%;top:24%">
+      <p>精雕 | 纹样</p>
+      <p>手工 | 传承</p>
+      <p>银饰之美</p>
+    </div>
   </section>
-  <!-- 8 新生传承 -->
+
+  <!-- ==================== Slide 8: 新生传承 ==================== -->
   <section class="slide" data-index="7">
     <img src="https://cdn.jsdelivr.net/gh/YHY342/yijing-h5@gh-pages/images/08-xinsheng.png" alt="新生传承">
+    <div class="texter" style="left:16%;top:20%">
+      <div class="title-cn"><span class="ch">新</span><span class="ch">生</span><span class="ch">传</span><span class="ch">承</span></div>
+      <div class="title-en"><span class="en" style="transition-delay:.45s">INHERITANCE</span> <span class="en" style="transition-delay:.55s">AND</span> <span class="en" style="transition-delay:.65s">INNOVATION</span></div>
+      <div class="gold-line"></div>
+    </div>
+    <div class="texter desc" style="left:52%;top:24%">
+      <p>服饰设计</p>
+      <p>文创产品</p>
+      <p>当代艺术</p>
+    </div>
   </section>
-  <!-- 9 生生不息 -->
+
+  <!-- ==================== Slide 9: 生生不息 ==================== -->
   <section class="slide" data-index="8">
     <img src="https://cdn.jsdelivr.net/gh/YHY342/yijing-h5@gh-pages/images/09-shengsheng.png" alt="生生不息">
+    <div class="texter" style="left:38%;top:30%">
+      <div class="title-cn"><span class="shimmer"><span class="ch">生</span><span class="ch">生</span><span class="ch">不</span><span class="ch">息</span></span></div>
+      <div class="title-en"><span class="en" style="transition-delay:.5s">FOREVER</span> <span class="en" style="transition-delay:.6s">ALIVE</span></div>
+      <div class="gold-line"></div>
+      <div class="cover-desc">文化不止于被看见</div>
+    </div>
   </section>
+
 </div>
 
 <script>
 (function(){
-  var slider = document.getElementById('slider');
-  var slides = document.querySelectorAll('.slide');
-  var progress = document.getElementById('progress');
-  var dotsWrap = document.getElementById('dots');
-  var hint = document.getElementById('swipeHint');
-  var total = slides.length;
-  var currentIdx = 0;
+  var slider=document.getElementById('slider'),slides=document.querySelectorAll('.slide');
+  var progress=document.getElementById('progress'),dotsWrap=document.getElementById('dots'),hint=document.getElementById('swipeHint');
+  var total=slides.length,currentIdx=0;
 
-  // ========== 构建底部圆点 ==========
+  // 底部圆点
   for(var i=0;i<total;i++){
-    var d = document.createElement('div');
-    d.className = 'dot' + (i===0?' active':'');
-    dotsWrap.appendChild(d);
+    var d=document.createElement('div');
+    d.className='dot'+(i===0?' active':'');dotsWrap.appendChild(d);
   }
-  var dots = dotsWrap.querySelectorAll('.dot');
+  var dots=dotsWrap.querySelectorAll('.dot');
 
-  // ========== 更新进度条 + 圆点 ==========
   function updateUI(idx){
-    progress.style.width = ((idx+1)/total*100) + '%';
-    for(var j=0;j<dots.length;j++) dots[j].classList.toggle('active', j===idx);
+    progress.style.width=((idx+1)/total*100)+'%';
+    for(var j=0;j<dots.length;j++) dots[j].classList.toggle('active',j===idx);
+  }
+  function showHint(arrow){
+    hint.textContent=arrow;hint.classList.add('show');
+    setTimeout(function(){hint.classList.remove('show')},300);
   }
 
-  // ========== 翻页状态管理 ==========
   function goTo(idx){
     if(idx<0||idx>=total||idx===currentIdx) return;
-    // 更新 active class（Ken Burns 动画触发）
     slides[currentIdx].classList.remove('active');
-    slides[currentIdx].classList.add('prev');
     slides[idx].classList.add('active');
-    // 震动反馈
-    try { if('vibrate' in navigator) navigator.vibrate(15); } catch(e){}
-    // 翻页提示
+    try{if('vibrate' in navigator) navigator.vibrate(15);}catch(e){}
     showHint(idx<currentIdx?'↑':'↓');
-    currentIdx = idx;
-    updateUI(idx);
-    // 隐藏上一页的 prev
-    setTimeout(function(){
-      slides.forEach(function(s){ if(!s.classList.contains('active')) s.classList.remove('prev'); });
-    }, 600);
+    currentIdx=idx;updateUI(idx);
   }
 
-  function showHint(arrow){
-    hint.textContent = arrow;
-    hint.classList.add('show');
-    setTimeout(function(){ hint.classList.remove('show'); }, 350);
-  }
-
-  // 初始进度
   updateUI(0);
   dotsWrap.classList.add('show');
-  setTimeout(function(){ dotsWrap.classList.remove('show'); }, 2000);
+  setTimeout(function(){dotsWrap.classList.remove('show')},2000);
 
-  // ========== IntersectionObserver 翻页检测 ==========
-  var io = new IntersectionObserver(function(entries){
+  // IntersectionObserver
+  var io=new IntersectionObserver(function(entries){
     entries.forEach(function(e){
       if(e.isIntersecting){
-        var idx = parseInt(e.target.dataset.index,10);
-        if(idx!==currentIdx){
-          goTo(idx);
-        }
+        var idx=parseInt(e.target.dataset.index,10);
+        if(idx!==currentIdx) goTo(idx);
       }
     });
-  },{ root:slider, threshold:0.5 });
-  slides.forEach(function(s){ io.observe(s); });
+  },{root:slider,threshold:0.5});
+  slides.forEach(function(s){io.observe(s);});
 
-  // ========== 触摸快速翻页 ==========
-  var startY=0, startT=0;
-  slider.addEventListener('touchstart',function(e){
-    startY = e.touches[0].clientY;
-    startT = Date.now();
-  },{passive:true});
+  // 触摸翻页
+  var startY=0,startT=0;
+  slider.addEventListener('touchstart',function(e){startY=e.touches[0].clientY;startT=Date.now();},{passive:true});
   slider.addEventListener('touchend',function(e){
-    var dy = startY - (e.changedTouches[0].clientY);
-    var dt = Date.now() - startT;
-    var fast = dt < 500 && Math.abs(dy) > 40;
-    var long = Math.abs(dy) > window.innerHeight*0.25;
-    if(fast || long){
-      var target = currentIdx + (dy>0?1:-1);
-      if(target>=0&&target<total){
-        slider.scrollTo({top:target*window.innerHeight,behavior:'smooth'});
-      }
+    var dy=startY-(e.changedTouches[0].clientY),dt=Date.now()-startT;
+    var fast=dt<500&&Math.abs(dy)>40,long=Math.abs(dy)>window.innerHeight*0.25;
+    if(fast||long){
+      var t=currentIdx+(dy>0?1:-1);
+      if(t>=0&&t<total) slider.scrollTo({top:t*window.innerHeight,behavior:'smooth'});
     }
   },{passive:true});
 
-  // ========== 键盘（PC 预览） ==========
+  // 键盘
   window.addEventListener('keydown',function(e){
-    if(e.key==='ArrowDown'||e.key==='PageDown'){
-      var t = currentIdx+1; if(t<total) slider.scrollTo({top:t*window.innerHeight,behavior:'smooth'});
-    } else if(e.key==='ArrowUp'||e.key==='PageUp'){
-      var t = currentIdx-1; if(t>=0) slider.scrollTo({top:t*window.innerHeight,behavior:'smooth'});
-    } else if(e.key==='Home'){
-      slider.scrollTo({top:0,behavior:'smooth'});
-    } else if(e.key==='End'){
-      slider.scrollTo({top:(total-1)*window.innerHeight,behavior:'smooth'});
-    }
+    if(e.key==='ArrowDown'||e.key==='PageDown'){var t=currentIdx+1;if(t<total)slider.scrollTo({top:t*window.innerHeight,behavior:'smooth'});}
+    else if(e.key==='ArrowUp'||e.key==='PageUp'){var t=currentIdx-1;if(t>=0)slider.scrollTo({top:t*window.innerHeight,behavior:'smooth'});}
   });
 
-  // ========== 双击封面震动 ==========
-  var lastTap=0;
-  slider.addEventListener('touchend',function(){
-    var now = Date.now();
-    if(now - lastTap < 300){
-      try { if('vibrate' in navigator) navigator.vibrate([10,30,10]); } catch(e){}
-    }
-    lastTap = now;
-  },{passive:true});
-
-  // ========== 鼠标滚轮平滑（PC） ==========
+  // 滚轮
   var wheelLock=false;
   slider.addEventListener('wheel',function(e){
-    e.preventDefault();
-    if(wheelLock) return;
-    wheelLock=true;
-    setTimeout(function(){ wheelLock=false; }, 600);
-    var target = currentIdx + (e.deltaY>0?1:-1);
-    if(target>=0&&target<total){
-      slider.scrollTo({top:target*window.innerHeight,behavior:'smooth'});
-    }
+    e.preventDefault();if(wheelLock)return;wheelLock=true;
+    setTimeout(function(){wheelLock=false},500);
+    var t=currentIdx+(e.deltaY>0?1:-1);
+    if(t>=0&&t<total) slider.scrollTo({top:t*window.innerHeight,behavior:'smooth'});
   },{passive:false});
 })();
 </script>
