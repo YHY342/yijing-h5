@@ -35,7 +35,12 @@ html,body,div,section{scrollbar-width:none!important;-ms-overflow-style:none!imp
   background-image:var(--img);background-size:100% 100%;background-position:center}
 
 /* ===== 动画公共基类 ===== */
-.anim{position:absolute;z-index:10;pointer-events:none;opacity:0}
+.anim{position:absolute;z-index:10;pointer-events:none}
+/* 初始状态：隐藏（由具体元素的 transform/opacity 控制入场动画） */
+.slide:not(.ready) .anim{opacity:0}
+/* slide 准备好后：容器可见，内部子元素自行做入场动画 */
+.slide.active .anim{opacity:1}
+.slide.ready .anim{opacity:1}
 
 /* ==================================================================
    SLIDE 1: 封面 —— 基于原始图片 (283×616) 百分比定位
