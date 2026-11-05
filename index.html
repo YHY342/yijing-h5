@@ -260,36 +260,8 @@
     50%    {transform:translateX(-50%) rotate(45deg) translateY(6px);opacity:.4}
   }
 
-  /* ========== 右侧高级指示器 ========== */
-  .side-nav{
-    position:fixed;right:16px;top:50%;transform:translateY(-50%);
-    z-index:50;display:flex;flex-direction:column;gap:14px;
-    padding:18px 8px;
-    padding-top:calc(env(safe-area-inset-top) + 18px);
-    padding-bottom:calc(env(safe-area-inset-bottom) + 18px);
-    background:rgba(0,0,0,.18);
-    backdrop-filter:blur(12px) saturate(1.4);-webkit-backdrop-filter:blur(12px) saturate(1.4);
-    border-radius:20px;border:1px solid rgba(255,255,255,.08);
-    box-shadow:0 4px 24px rgba(0,0,0,.25);
-  }
-  .nav-item{
-    position:relative;width:3px;height:20px;
-    background:rgba(255,255,255,.22);border-radius:3px;
-    cursor:pointer;transition:all .4s var(--ease-out-expo);
-  }
-  .nav-item::before{
-    content:"";position:absolute;inset:-6px;border-radius:10px;
-  }
-  .nav-item.active{
-    width:3px;height:32px;
-    background:linear-gradient(180deg,#f4df99 0%,#d8a54a 100%);
-    box-shadow:0 0 14px rgba(232,200,122,.65), 0 0 28px rgba(232,200,122,.25);
-    animation:navPulse 2.4s ease-in-out infinite;
-  }
-  @keyframes navPulse{
-    0%,100%{box-shadow:0 0 14px rgba(232,200,122,.65), 0 0 28px rgba(232,200,122,.25)}
-    50%    {box-shadow:0 0 18px rgba(232,200,122,.8), 0 0 36px rgba(232,200,122,.4)}
-  }
+  /* ========== 右侧高级指示器（已移除） ========== */
+  .side-nav{display:none!important}
 
   /* ========== 通用入场动画 ========== */
   .slide.active .tag,
@@ -547,8 +519,7 @@
 
 </div>
 
-<!-- 右侧高级导航 -->
-<nav class="side-nav" id="sideNav" aria-label="页面导航"></nav>
+
 
 <script>
 document.documentElement.classList.add('js');
@@ -560,7 +531,6 @@ function boot(){
   try {
     var slider = document.getElementById('slider');
     var slides = document.querySelectorAll('.slide');
-    var navWrap = document.getElementById('sideNav');
     var progressBar = document.getElementById('topProgress');
     var total = slides.length;
     var currentIdx = 0;
@@ -570,18 +540,6 @@ function boot(){
       slides[0].classList.add('active');
       progressBar.style.width = (1/total*100) + '%';
     } catch(e) {}
-
-    // ========== 构建右侧导航 ==========
-    try {
-      slides.forEach(function(_,i){
-        var item = document.createElement('span');
-        item.className = 'nav-item' + (i===0?' active':'');
-        item.dataset.idx = i;
-        item.title = '第 ' + (i+1) + ' / ' + total + ' 页';
-        navWrap.appendChild(item);
-      });
-      var navItems = navWrap.querySelectorAll('.nav-item');
-    } catch(e) { navItems = []; }
 
     // ========== 标题逐字动画 ==========
     function buildChars(el){
@@ -632,9 +590,6 @@ function boot(){
         slides[currentIdx].classList.add('prev');
         slides[idx].classList.add('active');
         currentIdx = idx;
-        for(var ni=0; ni<navItems.length; ni++){
-          navItems[ni].classList.toggle('active', ni===idx);
-        }
         progressBar.style.width = ((idx+1)/total*100) + '%';
       } catch(e) {}
     }
@@ -665,15 +620,6 @@ function boot(){
         var idx = Math.round(slider.scrollTop / h);
         if(idx !== currentIdx && idx >=0 && idx < total) onSlideChange(idx);
       }, {passive:true});
-    }
-
-    // ========== 导航点击 ==========
-    for(var ni2=0; ni2<navItems.length; ni2++){
-      (function(i){
-        navItems[i].addEventListener('click', function(){
-          slider.scrollTo({ top: i * window.innerHeight, behavior:'smooth' });
-        });
-      })(ni2);
     }
 
     // ========== 触摸优化 ==========
